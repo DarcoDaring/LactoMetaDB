@@ -1,0 +1,114 @@
+.team {
+  padding: 100px 60px;
+  text-align: center;
+  background: linear-gradient(180deg, #f8fafc, #eef2ff);
+}
+
+/* Title */
+.team-title {
+  font-size: 2.6rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.team-subtitle {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+/* Grid */
+.team-list {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* force same line on desktop */
+  gap: 32px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-items: center;
+}
+
+
+/* Card */
+.project-card {
+  background: rgba(255, 255, 255, 0.7);
+  padding: 32px;
+  border-radius: 22px;
+  text-align: left;
+  backdrop-filter: blur(8px);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 260px;
+  display: flex;          /* ✅ required */
+  flex-direction: column; /* keeps cards neat */
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Role */
+.project-card h3 {
+  font-size: 1.35rem;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+/* Name */
+.member-name {
+  font-size: 1.05rem;
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+/* Social icons */
+.social-links {
+  display: flex;
+  gap: 14px;
+  margin-top: auto;          /* ⭐ pushes icons to bottom */
+  justify-content: center;
+}
+
+.social-links a {
+  font-size: 1.2rem;
+  text-decoration: none;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+  background: rgba(59, 130, 246, 0.25);
+  transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .team {
+    padding: 80px 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .team-list {
+    grid-template-columns: 1fr; /* one card per row */
+  }
+
+  .project-card {
+    max-width: 320px; /* slightly wider on mobile */
+    margin: 0 auto;
+    text-align: center;
+    display: flex;              /* ✅ ADD */
+  flex-direction: column;
+  }
+
+  .social-links {
+    justify-content: center;
+    margin-top: auto;
+  }
+}

@@ -1,0 +1,277 @@
+/* =========================
+   RESET
+========================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* =========================
+   PAGE  (MATCH SIGNIFICANCE)
+========================= */
+.search-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+  padding: 120px 20px;
+}
+
+/* =========================
+   SEARCH POSITION ANIMATION
+========================= */
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  transition: all 0.6s ease;
+  margin-bottom: 60px;
+}
+
+.search-container.searched {
+  align-items: flex-start;
+  min-height: auto;
+  margin-top: 40px;
+}
+
+/* =========================
+   SEARCH CARD
+========================= */
+.search-card {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  width: 800px;
+  padding: 38px;
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  animation: fadeIn 0.6s ease;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.inputs {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.input-group {
+  position: relative;
+  flex: 1;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 38px 14px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  font-size: 14px;
+  background: #ffffff;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.input-group label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: #64748b;
+  background: #ffffff;
+  padding: 0 6px;
+  pointer-events: none;
+  transition: 0.25s ease;
+}
+
+.input-group input:focus,
+.input-group input:hover {
+  outline: none;
+  border-color: #bf4646;
+  box-shadow: 0 0 0 4px rgba(191, 70, 70, 0.15);
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -8px;
+  font-size: 11px;
+  color: #bf4646;
+}
+
+/* Dropdown arrow */
+.select-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.input-group input:focus ~ .select-icon {
+  transform: translateY(-50%) rotate(180deg);
+  color: #bf4646;
+}
+
+/* =========================
+   CUSTOM DROPDOWN
+========================= */
+.custom-select {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  max-height: 240px;
+  background: linear-gradient(145deg, #ffffff, #fdf2f8);
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  overflow-y: auto;
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+
+.dropdown-item {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #020617;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #fde2e2;
+  color: #bf4646;
+}
+
+/* Scrollbar */
+.dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.search-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #bf4646, #9f2f2f);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(191, 70, 70, 0.4);
+}
+
+/* =========================
+   RESULTS CONTAINER
+========================= */
+.results-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  padding: 34px;
+  border-radius: 22px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.14);
+}
+
+/* =========================
+   RESULT CARD (MATCH FEATURE CARDS)
+========================= */
+.result-card {
+  background: linear-gradient(145deg, #ecfeff, #cffafe);
+  padding: 24px;
+  border-radius: 18px;
+  margin-bottom: 22px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-6px);
+}
+
+.label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.primary-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #020617;
+}
+
+/* Grid */
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+/* =========================
+   MAP / DOI
+========================= */
+.result-links-column {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.result-link-block a {
+  font-size: 14px;
+  color: #bf4646;
+  text-decoration: none;
+}
+
+.result-link-block a:hover {
+  text-decoration: underline;
+}
+
+.na-text {
+  font-size: 14px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* =========================
+   ANIMATIONS (SAME FEEL)
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
