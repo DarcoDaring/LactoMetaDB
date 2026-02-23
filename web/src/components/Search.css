@@ -9,12 +9,19 @@
 }
 
 /* =========================
-   PAGE  (MATCH SIGNIFICANCE)
+   PAGE
 ========================= */
 .search-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #eef2ff, #fdf2f8);
   padding: 120px 20px;
+}
+
+/* Mobile padding */
+@media (max-width: 768px) {
+  .search-page {
+    padding: 80px 14px;
+  }
 }
 
 /* =========================
@@ -40,11 +47,19 @@
 ========================= */
 .search-card {
   background: linear-gradient(145deg, #ffffff, #f8fafc);
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
   padding: 38px;
   border-radius: 22px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   animation: fadeIn 0.6s ease;
+}
+
+/* Mobile card */
+@media (max-width: 768px) {
+  .search-card {
+    padding: 26px 20px;
+  }
 }
 
 .title {
@@ -52,6 +67,13 @@
   margin-bottom: 30px;
   color: #0f172a;
   font-weight: 600;
+  font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 20px;
+  }
 }
 
 /* =========================
@@ -61,6 +83,13 @@
   display: flex;
   gap: 18px;
   margin-bottom: 32px;
+}
+
+/* Stack inputs on mobile */
+@media (max-width: 768px) {
+  .inputs {
+    flex-direction: column;
+  }
 }
 
 .input-group {
@@ -141,6 +170,15 @@
   overflow-y: auto;
   z-index: 999;
   animation: fadeIn 0.2s ease;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile dropdown height */
+@media (max-width: 768px) {
+  .dropdown {
+    max-height: 180px;
+  }
 }
 
 .dropdown-item {
@@ -187,6 +225,14 @@
   box-shadow: 0 18px 40px rgba(191, 70, 70, 0.4);
 }
 
+/* Bigger tap area on mobile */
+@media (max-width: 768px) {
+  .search-btn {
+    padding: 16px;
+    font-size: 17px;
+  }
+}
+
 /* =========================
    RESULTS CONTAINER
 ========================= */
@@ -199,8 +245,14 @@
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.14);
 }
 
+@media (max-width: 768px) {
+  .results-container {
+    padding: 22px;
+  }
+}
+
 /* =========================
-   RESULT CARD (MATCH FEATURE CARDS)
+   RESULT CARD
 ========================= */
 .result-card {
   background: linear-gradient(145deg, #ecfeff, #cffafe);
@@ -228,12 +280,21 @@
   color: #020617;
 }
 
-/* Grid */
+/* =========================
+   RESULT GRID
+========================= */
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
   margin-top: 16px;
+}
+
+/* Stack on mobile */
+@media (max-width: 768px) {
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* =========================
@@ -246,10 +307,18 @@
   gap: 24px;
 }
 
+@media (max-width: 768px) {
+  .result-links-column {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
 .result-link-block a {
   font-size: 14px;
   color: #bf4646;
   text-decoration: none;
+  word-break: break-all;
 }
 
 .result-link-block a:hover {
@@ -263,7 +332,7 @@
 }
 
 /* =========================
-   ANIMATIONS (SAME FEEL)
+   ANIMATIONS
 ========================= */
 @keyframes fadeIn {
   from {
