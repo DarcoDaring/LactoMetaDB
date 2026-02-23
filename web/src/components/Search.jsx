@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import "./Search.css";
 
+/* 🔑 BACKEND BASE URL (Railway in prod, localhost in dev) */
+const API_BASE = import.meta.env.VITE_API_URL;
+
 function Search() {
   const [microbes, setMicrobes] = useState([]);
   const [metabolites, setMetabolites] = useState([]);
@@ -18,20 +21,24 @@ function Search() {
   const metaboliteRef = useRef(null);
 
   const [hasSearched, setHasSearched] = useState(false);
-  const [searched, setSearched] = useState(false); // 🔑 already exists
+  const [searched, setSearched] = useState(false);
 
-  /* INITIAL LOAD */
+  /* =========================
+     INITIAL LOAD
+  ========================= */
   useEffect(() => {
-    fetch("http://localhost:5000/api/microbes")
+    fetch(`${API_BASE}/api/microbes`)
       .then(res => res.json())
       .then(setMicrobes);
 
-    fetch("http://localhost:5000/api/metabolites")
+    fetch(`${API_BASE}/api/metabolites`)
       .then(res => res.json())
       .then(setMetabolites);
   }, []);
 
-  /* CLOSE DROPDOWN */
+  /* =========================
+     CLOSE DROPDOWNS
+  ========================= */
   useEffect(() => {
     const handler = (e) => {
       if (microbeRef.current && !microbeRef.current.contains(e.target)) {
@@ -45,48 +52,63 @@ function Search() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  /* DEPENDENT FETCH LOGIC */
+  /* =========================
+     DEPENDENT FETCH: MICROBE → METABOLITES
+  ========================= */
   useEffect(() => {
     if (!selectedMicrobe) {
-      fetch("http://localhost:5000/api/metabolites")
+      fetch(`${API_BASE}/api/metabolites`)
         .then(res => res.json())
         .then(setMetabolites);
       return;
     }
 
-    fetch(`http://localhost:5000/api/metabolites/by-microbe?microbe=${encodeURIComponent(selectedMicrobe)}`)
+    fetch(
+      `${API_BASE}/api/metabolites/by-microbe?microbe=${encodeURIComponent(
+        selectedMicrobe
+      )}`
+    )
       .then(res => res.json())
       .then(setMetabolites);
   }, [selectedMicrobe]);
 
+  /* =========================
+     DEPENDENT FETCH: METABOLITE → MICROBES
+  ========================= */
   useEffect(() => {
     if (!selectedMetabolite) {
-      fetch("http://localhost:5000/api/microbes")
+      fetch(`${API_BASE}/api/microbes`)
         .then(res => res.json())
         .then(setMicrobes);
       return;
     }
 
-    fetch(`http://localhost:5000/api/microbes/by-metabolite?metabolite=${encodeURIComponent(selectedMetabolite)}`)
+    fetch(
+      `${API_BASE}/api/microbes/by-metabolite?metabolite=${encodeURIComponent(
+        selectedMetabolite
+      )}`
+    )
       .then(res => res.json())
       .then(setMicrobes);
   }, [selectedMetabolite]);
 
-  /* SEARCH */
+  /* =========================
+     SEARCH
+  ========================= */
   const handleSearch = () => {
     if (hasSearched) {
       setSelectedMicrobe("");
       setSelectedMetabolite("");
       setResults([]);
       setHasSearched(false);
-      setSearched(false); // 🔑 back to center
+      setSearched(false);
       return;
     }
 
     setLoading(true);
     setResults([]);
 
-    fetch("http://localhost:5000/api/search", {
+    fetch(`${API_BASE}/api/search`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -98,7 +120,7 @@ function Search() {
       .then(data => {
         setResults(data);
         setHasSearched(true);
-        setSearched(true); // 🔑 move card up
+        setSearched(true);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -111,12 +133,12 @@ function Search() {
 
   return (
     <section className="search-page" id="search">
-      {/* 🔑 CLASS ADDED */}
       <div className={`search-container ${searched ? "searched" : ""}`}>
         <div className="search-card">
           <h2 className="title">Search Records</h2>
 
           <div className="inputs">
+            {/* MICROBE */}
             <div className="input-group custom-select" ref={microbeRef}>
               <input
                 type="text"
@@ -125,7 +147,7 @@ function Search() {
                   setSelectedMicrobe(e.target.value);
                   setSelectedMetabolite("");
                   setHasSearched(false);
-                  setSearched(false); // 🔑 reset layout
+                  setSearched(false);
                   setShowMicrobeDropdown(true);
                 }}
                 onFocus={() => setShowMicrobeDropdown(true)}
@@ -152,6 +174,7 @@ function Search() {
               )}
             </div>
 
+            {/* METABOLITE */}
             <div className="input-group custom-select" ref={metaboliteRef}>
               <input
                 type="text"
@@ -160,7 +183,7 @@ function Search() {
                   setSelectedMetabolite(e.target.value);
                   setSelectedMicrobe("");
                   setHasSearched(false);
-                  setSearched(false); // 🔑 reset layout
+                  setSearched(false);
                   setShowMetaboliteDropdown(true);
                 }}
                 onFocus={() => setShowMetaboliteDropdown(true)}
@@ -198,6 +221,7 @@ function Search() {
       {results.length > 0 && (
         <div className="results-container slide-in">
           <h3 className="results-title">Search Results</h3>
+
           {results.map((row, i) => (
             <div className="result-card" key={i}>
               <div className="result-top">
@@ -217,40 +241,38 @@ function Search() {
               </div>
 
               <div className="result-links-column">
-  {/* MAP */}
-  <div className="result-link-block">
-    <span className="label">Map</span>
-    <br />
-    {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"] !== "Not Available" ? (
-      <a
-        href={row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
-      </a>
-    ) : (
-      <p className="na-text">Not Available</p>
-    )}
-  </div>
+                {/* MAP */}
+                <div className="result-link-block">
+                  <span className="label">Map</span><br />
+                  {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"] !== "Not Available" ? (
+                    <a
+                      href={row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
+                    </a>
+                  ) : (
+                    <p className="na-text">Not Available</p>
+                  )}
+                </div>
 
-  {/* DOI */}
-  <div className="result-link-block">
-    <span className="label">DOI</span>
-    <br />
-    {row.DOI !== "Not Available" ? (
-      <a
-        href={`https://doi.org/${row.DOI}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {row.DOI}
-      </a>
-    ) : (
-      <p className="na-text">Not Available</p>
-    )}
-  </div>
-</div>
+                {/* DOI */}
+                <div className="result-link-block">
+                  <span className="label">DOI</span><br />
+                  {row.DOI !== "Not Available" ? (
+                    <a
+                      href={`https://doi.org/${row.DOI}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {row.DOI}
+                    </a>
+                  ) : (
+                    <p className="na-text">Not Available</p>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
         </div>

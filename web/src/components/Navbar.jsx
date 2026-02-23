@@ -1,284 +1,90 @@
-import { useEffect, useState, useRef } from "react";
-import "./Search.css";
+import { useEffect, useState } from "react";
+import "./Navbar.css";
+import logoImg from "../assets/images/logo.png";
 
-/* 🔑 BACKEND BASE URL (Railway in prod, localhost in dev) */
-const API_BASE = import.meta.env.VITE_API_URL;
+function Navbar() {
+  const [activeSection, setActiveSection] = useState("home");
+  const [menuOpen, setMenuOpen] = useState(false);
 
-function Search() {
-  const [microbes, setMicrobes] = useState([]);
-  const [metabolites, setMetabolites] = useState([]);
-
-  const [selectedMicrobe, setSelectedMicrobe] = useState("");
-  const [selectedMetabolite, setSelectedMetabolite] = useState("");
-
-  const [showMicrobeDropdown, setShowMicrobeDropdown] = useState(false);
-  const [showMetaboliteDropdown, setShowMetaboliteDropdown] = useState(false);
-
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const microbeRef = useRef(null);
-  const metaboliteRef = useRef(null);
-
-  const [hasSearched, setHasSearched] = useState(false);
-  const [searched, setSearched] = useState(false);
-
-  /* =========================
-     INITIAL LOAD
-  ========================= */
+  // Scroll spy using IntersectionObserver (stable)
   useEffect(() => {
-    fetch(`${API_BASE}/api/microbes`)
-      .then(res => res.json())
-      .then(setMicrobes);
+    const sections = document.querySelectorAll("section");
 
-    fetch(`${API_BASE}/api/metabolites`)
-      .then(res => res.json())
-      .then(setMetabolites);
-  }, []);
-
-  /* =========================
-     CLOSE DROPDOWNS
-  ========================= */
-  useEffect(() => {
-    const handler = (e) => {
-      if (microbeRef.current && !microbeRef.current.contains(e.target)) {
-        setShowMicrobeDropdown(false);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        threshold: 0.3,
       }
-      if (metaboliteRef.current && !metaboliteRef.current.contains(e.target)) {
-        setShowMetaboliteDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  /* =========================
-     DEPENDENT FETCH: MICROBE → METABOLITES
-  ========================= */
-  useEffect(() => {
-    if (!selectedMicrobe) {
-      fetch(`${API_BASE}/api/metabolites`)
-        .then(res => res.json())
-        .then(setMetabolites);
-      return;
-    }
-
-    fetch(
-      `${API_BASE}/api/metabolites/by-microbe?microbe=${encodeURIComponent(
-        selectedMicrobe
-      )}`
-    )
-      .then(res => res.json())
-      .then(setMetabolites);
-  }, [selectedMicrobe]);
-
-  /* =========================
-     DEPENDENT FETCH: METABOLITE → MICROBES
-  ========================= */
-  useEffect(() => {
-    if (!selectedMetabolite) {
-      fetch(`${API_BASE}/api/microbes`)
-        .then(res => res.json())
-        .then(setMicrobes);
-      return;
-    }
-
-    fetch(
-      `${API_BASE}/api/microbes/by-metabolite?metabolite=${encodeURIComponent(
-        selectedMetabolite
-      )}`
-    )
-      .then(res => res.json())
-      .then(setMicrobes);
-  }, [selectedMetabolite]);
-
-  /* =========================
-     SEARCH
-  ========================= */
-  const handleSearch = () => {
-    if (hasSearched) {
-      setSelectedMicrobe("");
-      setSelectedMetabolite("");
-      setResults([]);
-      setHasSearched(false);
-      setSearched(false);
-      return;
-    }
-
-    setLoading(true);
-    setResults([]);
-
-    fetch(`${API_BASE}/api/search`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        microbe: selectedMicrobe,
-        metabolite: selectedMetabolite
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        setResults(data);
-        setHasSearched(true);
-        setSearched(true);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  };
-
-  const filterOptions = (options, value) =>
-    options.filter(opt =>
-      opt.toLowerCase().includes(value.toLowerCase())
     );
 
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+    };
+  }, []);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <section className="search-page" id="search">
-      <div className={`search-container ${searched ? "searched" : ""}`}>
-        <div className="search-card">
-          <h2 className="title">Search Records</h2>
-
-          <div className="inputs">
-            {/* MICROBE */}
-            <div className="input-group custom-select" ref={microbeRef}>
-              <input
-                type="text"
-                value={selectedMicrobe}
-                onChange={(e) => {
-                  setSelectedMicrobe(e.target.value);
-                  setSelectedMetabolite("");
-                  setHasSearched(false);
-                  setSearched(false);
-                  setShowMicrobeDropdown(true);
-                }}
-                onFocus={() => setShowMicrobeDropdown(true)}
-                placeholder=" "
-              />
-              <label>Select The Microbes</label>
-              <span className="select-icon">▾</span>
-
-              {showMicrobeDropdown && (
-                <div className="dropdown">
-                  {filterOptions(microbes, selectedMicrobe).map((m, i) => (
-                    <div
-                      key={i}
-                      className="dropdown-item"
-                      onClick={() => {
-                        setSelectedMicrobe(m);
-                        setShowMicrobeDropdown(false);
-                      }}
-                    >
-                      {m}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* METABOLITE */}
-            <div className="input-group custom-select" ref={metaboliteRef}>
-              <input
-                type="text"
-                value={selectedMetabolite}
-                onChange={(e) => {
-                  setSelectedMetabolite(e.target.value);
-                  setSelectedMicrobe("");
-                  setHasSearched(false);
-                  setSearched(false);
-                  setShowMetaboliteDropdown(true);
-                }}
-                onFocus={() => setShowMetaboliteDropdown(true)}
-                placeholder=" "
-              />
-              <label>Select The Metabolites</label>
-              <span className="select-icon">▾</span>
-
-              {showMetaboliteDropdown && (
-                <div className="dropdown">
-                  {filterOptions(metabolites, selectedMetabolite).map((m, i) => (
-                    <div
-                      key={i}
-                      className="dropdown-item"
-                      onClick={() => {
-                        setSelectedMetabolite(m);
-                        setShowMetaboliteDropdown(false);
-                      }}
-                    >
-                      {m}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <button className="search-btn" onClick={handleSearch}>
-            {loading ? "Searching..." : hasSearched ? "Clear" : "Search"}
-          </button>
+    <header className="navbar">
+      <div className="navbar-inner">
+        {/* LOGO */}
+        <div className="nav-logo">
+          <img src={logoImg} alt="LactoMetaDb logo" className="logo-img" />
+          LactoMetaDb
         </div>
+
+        {/* Hamburger (mobile) */}
+        <div
+          className={`hamburger ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        {/* Nav links */}
+        <nav className={`nav-links ${menuOpen ? "show" : ""}`}>
+          <a
+            href="#home"
+            className={activeSection === "home" ? "active" : ""}
+            onClick={closeMenu}
+          >
+            Home
+          </a>
+          <a
+            href="#search"
+            className={activeSection === "search" ? "active" : ""}
+            onClick={closeMenu}
+          >
+            Search
+          </a>
+          <a
+            href="#projects"
+            className={activeSection === "projects" ? "active" : ""}
+            onClick={closeMenu}
+          >
+            Team
+          </a>
+          <a
+            href="#contact"
+            className={activeSection === "contact" ? "active" : ""}
+            onClick={closeMenu}
+          >
+            Contact
+          </a>
+        </nav>
       </div>
-
-      {/* RESULTS */}
-      {results.length > 0 && (
-        <div className="results-container slide-in">
-          <h3 className="results-title">Search Results</h3>
-
-          {results.map((row, i) => (
-            <div className="result-card" key={i}>
-              <div className="result-top">
-                <span className="label">Pathway</span>
-                <h4 className="primary-text">{row["Pathways Name"]}</h4>
-              </div>
-
-              <div className="result-grid">
-                <div>
-                  <span className="label">Metabolite</span>
-                  <p>{row.Metabolites}</p>
-                </div>
-                <div>
-                  <span className="label">Microbe</span>
-                  <p>{row.Microbes}</p>
-                </div>
-              </div>
-
-              <div className="result-links-column">
-                {/* MAP */}
-                <div className="result-link-block">
-                  <span className="label">Map</span><br />
-                  {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"] !== "Not Available" ? (
-                    <a
-                      href={row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
-                    </a>
-                  ) : (
-                    <p className="na-text">Not Available</p>
-                  )}
-                </div>
-
-                {/* DOI */}
-                <div className="result-link-block">
-                  <span className="label">DOI</span><br />
-                  {row.DOI !== "Not Available" ? (
-                    <a
-                      href={`https://doi.org/${row.DOI}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {row.DOI}
-                    </a>
-                  ) : (
-                    <p className="na-text">Not Available</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
+    </header>
   );
 }
 
-export default Search;
+export default Navbar;
