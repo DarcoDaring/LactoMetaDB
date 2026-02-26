@@ -2,19 +2,34 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 import re
+import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # =========================
-# LOAD EXCEL DATA
+# FILE PATHS (RAILWAY SAFE)
 # =========================
-df = pd.read_excel("data/database_requirements.csv")
-df.columns = df.columns.str.strip()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+EXCEL_FILE = os.path.join(DATA_DIR, "database_requirements.xlsx")
 
-print("EXCEL COLUMNS:", df.columns.tolist())
+# =========================
+# GLOBAL DATAFRAME
+# =========================
+df = None
 
-# Column names (exact from Excel)
+def load_excel():
+    global df
+    df = pd.read_excel(EXCEL_FILE)
+    df.columns = df.columns.str.strip()
+    print("Excel loaded:", df.columns.tolist())
+
+load_excel()
+
+# =========================
+# COLUMN NAMES
+# =========================
 MICROBE_COL = "Microbes"
 METABOLITE_COL = "Metabolites"
 PATHWAY_COL = "Pathways Name"
@@ -28,118 +43,101 @@ def normalize(text):
     return re.sub(r"[^a-z0-9 ]", " ", str(text).lower())
 
 def safe_value(value):
-    """Return 'Not Available' for empty/NaN values"""
     if pd.isna(value) or str(value).strip() == "":
         return "Not Available"
     return str(value)
 
 # =========================
-# DROPDOWN ENDPOINTS
+# DROPDOWNS
 # =========================
-@app.route("/api/microbes", methods=["GET"])
-def get_microbes():
-    microbes = sorted(df[MICROBE_COL].dropna().unique().tolist())
-    return jsonify(microbes)
+@app.route("/api/microbes")
+def microbes():
+    return jsonify(sorted(df[MICROBE_COL].dropna().unique().tolist()))
 
+@app.route("/api/metabolites")
+def metabolites():
+    return jsonify(sorted(df[METABOLITE_COL].dropna().unique().tolist()))
 
-@app.route("/api/metabolites", methods=["GET"])
-def get_metabolites():
-    metabolites = sorted(df[METABOLITE_COL].dropna().unique().tolist())
-    return jsonify(metabolites)
+@app.route("/api/metabolites/by-microbe")
+def metabolites_by_microbe():
+    m = request.args.get("microbe", "").lower()
+    if not m:
+        return metabolites()
+    f = df[df[MICROBE_COL].astype(str).str.lower().str.contains(m, na=False)]
+    return jsonify(sorted(f[METABOLITE_COL].dropna().unique().tolist()))
 
-
-@app.route("/api/metabolites/by-microbe", methods=["GET"])
-def get_metabolites_by_microbe():
-    microbe = request.args.get("microbe", "").strip().lower()
-
-    if not microbe:
-        return jsonify(sorted(df[METABOLITE_COL].dropna().unique().tolist()))
-
-    filtered = df[
-        df[MICROBE_COL]
-        .astype(str)
-        .str.lower()
-        .str.contains(microbe, na=False)
-    ]
-
-    metabolites = sorted(filtered[METABOLITE_COL].dropna().unique().tolist())
-    return jsonify(metabolites)
-
-
-@app.route("/api/microbes/by-metabolite", methods=["GET"])
-def get_microbes_by_metabolite():
-    metabolite = request.args.get("metabolite", "").strip().lower()
-
-    if not metabolite:
-        return jsonify(sorted(df[MICROBE_COL].dropna().unique().tolist()))
-
-    filtered = df[
-        df[METABOLITE_COL]
-        .astype(str)
-        .str.lower()
-        .str.contains(metabolite, na=False)
-    ]
-
-    microbes = sorted(filtered[MICROBE_COL].dropna().unique().tolist())
-    return jsonify(microbes)
+@app.route("/api/microbes/by-metabolite")
+def microbes_by_metabolite():
+    m = request.args.get("metabolite", "").lower()
+    if not m:
+        return microbes()
+    f = df[df[METABOLITE_COL].astype(str).str.lower().str.contains(m, na=False)]
+    return jsonify(sorted(f[MICROBE_COL].dropna().unique().tolist()))
 
 # =========================
-# SEARCH ENDPOINT
+# SEARCH
 # =========================
 @app.route("/api/search", methods=["POST"])
 def search():
     data = request.json or {}
-
-    microbe_input = data.get("microbe", "").strip()
-    metabolite_input = data.get("metabolite", "").strip()
-
     result = df.copy()
 
-    # --- MICROBE KEYWORD MATCH ---
-    if microbe_input:
-        words = normalize(microbe_input).split()
-        for word in words:
-            if len(word) > 2:
-                result = result[
-                    result[MICROBE_COL]
-                    .astype(str)
-                    .apply(lambda x: word in normalize(x))
-                ]
+    for w in normalize(data.get("microbe", "")).split():
+        if len(w) > 2:
+            result = result[result[MICROBE_COL].astype(str).apply(lambda x: w in normalize(x))]
 
-    # --- METABOLITE KEYWORD MATCH ---
-    if metabolite_input:
-        words = normalize(metabolite_input).split()
-        for word in words:
-            if len(word) > 2:
-                result = result[
-                    result[METABOLITE_COL]
-                    .astype(str)
-                    .apply(lambda x: word in normalize(x))
-                ]
+    for w in normalize(data.get("metabolite", "")).split():
+        if len(w) > 2:
+            result = result[result[METABOLITE_COL].astype(str).apply(lambda x: w in normalize(x))]
 
-    # Keep only required columns
-    result = result[
-        [MICROBE_COL, METABOLITE_COL, PATHWAY_COL, MAP_COL, DOI_COL]
-    ]
+    result = result[[MICROBE_COL, METABOLITE_COL, PATHWAY_COL, MAP_COL, DOI_COL]]
 
-    print("SEARCH INPUT:", microbe_input, metabolite_input)
-    print("RESULT COUNT:", len(result))
-
-    # --- CLEAN EMPTY VALUES ---
-    cleaned_results = []
-    for _, row in result.iterrows():
-        cleaned_results.append({
-            MICROBE_COL: safe_value(row[MICROBE_COL]),
-            METABOLITE_COL: safe_value(row[METABOLITE_COL]),
-            PATHWAY_COL: safe_value(row[PATHWAY_COL]),
-            MAP_COL: safe_value(row[MAP_COL]),
-            DOI_COL: safe_value(row[DOI_COL]),
-        })
-
-    return jsonify(cleaned_results)
+    return jsonify([
+        {
+            MICROBE_COL: safe_value(r[MICROBE_COL]),
+            METABOLITE_COL: safe_value(r[METABOLITE_COL]),
+            PATHWAY_COL: safe_value(r[PATHWAY_COL]),
+            MAP_COL: safe_value(r[MAP_COL]),
+            DOI_COL: safe_value(r[DOI_COL]),
+        }
+        for _, r in result.iterrows()
+    ])
 
 # =========================
-# RUN SERVER
+# LOGIN
+# =========================
+@app.route("/api/login", methods=["POST", "OPTIONS"])
+def login():
+    if request.method == "OPTIONS":
+        return jsonify({"ok": True}), 200
+
+    d = request.json or {}
+    if d.get("username") == "admin" and d.get("password") == "admin123":
+        return jsonify(success=True)
+    return jsonify(success=False), 401
+
+# =========================
+# ADMIN
+# =========================
+@app.route("/api/admin/current-file")
+def current_file():
+    return jsonify({"file": os.path.basename(EXCEL_FILE)})
+
+@app.route("/api/admin/upload-excel", methods=["POST"])
+def upload_excel():
+    if "file" not in request.files:
+        return jsonify(error="No file"), 400
+
+    f = request.files["file"]
+    if not f.filename.endswith(".xlsx"):
+        return jsonify(error="Invalid file type"), 400
+
+    f.save(EXCEL_FILE)
+    load_excel()
+    return jsonify(message="Excel updated successfully")
+
+# =========================
+# RUN (RAILWAY)
 # =========================
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))

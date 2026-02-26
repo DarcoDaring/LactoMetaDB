@@ -1,0 +1,61 @@
+.admin-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column; /* ✅ STACK ITEMS VERTICALLY */
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* ✅ space between card and logout */
+  background: #f4f6f8;
+}
+
+.admin-card {
+  background: #ffffff;
+  padding: 40px;
+  width: 360px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-form input {
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.admin-form button {
+  padding: 12px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-form button:hover {
+  opacity: 0.85;
+}
+.logout-btn {
+  padding: 10px 26px;
+  background: #c62828;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
+}
