@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import "./Navbar.css";
-import logoImg from "../assets/images/logo.png";
+import logo from "../assets/LactoMetaDB (1).png";
 
 function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Scroll spy using IntersectionObserver (stable)
   useEffect(() => {
     const sections = document.querySelectorAll("section");
 
@@ -19,7 +18,7 @@ function Navbar() {
         });
       },
       {
-        threshold: 0.3,
+        threshold: 0.5,   // 👈 improved detection
       }
     );
 
@@ -30,18 +29,50 @@ function Navbar() {
     };
   }, []);
 
-  const closeMenu = () => setMenuOpen(false);
+  const handleClick = (section) => {
+    setActiveSection(section);   // 👈 update immediately on click
+    setMenuOpen(false);
+  };
 
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        {/* LOGO */}
+
+        {/* LEFT LINKS */}
+        <nav className={`nav-links ${menuOpen ? "show" : ""}`}>
+          <a href="#home"
+            className={activeSection === "home" ? "active" : ""}
+            onClick={() => handleClick("home")}
+          >Home</a>
+
+          <a href="#about"
+            className={activeSection === "about" ? "active" : ""}
+            onClick={() => handleClick("about")}
+          >About</a>
+
+          <a href="#search"
+            className={activeSection === "search" ? "active" : ""}
+            onClick={() => handleClick("search")}
+          >Search</a>
+
+          <a href="#projects"
+            className={activeSection === "projects" ? "active" : ""}
+            onClick={() => handleClick("projects")}
+          >Team</a>
+
+          <a href="#contact"
+            className={activeSection === "contact" ? "active" : ""}
+            onClick={() => handleClick("contact")}
+          >Contact</a>
+        </nav>
+
+        {/* CENTER LOGO */}
         <div className="nav-logo">
-          <img src={logoImg} alt="LactoMetaDb logo" className="logo-img" />
-          LactoMetaDb
+          <img src={logo} alt="logo" className="nav-logo-img" />
+          <span>LactoMetaDB</span>
         </div>
 
-        {/* Hamburger (mobile) */}
+        {/* HAMBURGER */}
         <div
           className={`hamburger ${menuOpen ? "open" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
@@ -51,37 +82,6 @@ function Navbar() {
           <span></span>
         </div>
 
-        {/* Nav links */}
-        <nav className={`nav-links ${menuOpen ? "show" : ""}`}>
-          <a
-            href="#home"
-            className={activeSection === "home" ? "active" : ""}
-            onClick={closeMenu}
-          >
-            Home
-          </a>
-          <a
-            href="#search"
-            className={activeSection === "search" ? "active" : ""}
-            onClick={closeMenu}
-          >
-            Search
-          </a>
-          <a
-            href="#projects"
-            className={activeSection === "projects" ? "active" : ""}
-            onClick={closeMenu}
-          >
-            Team
-          </a>
-          <a
-            href="#contact"
-            className={activeSection === "contact" ? "active" : ""}
-            onClick={closeMenu}
-          >
-            Contact
-          </a>
-        </nav>
       </div>
     </header>
   );

@@ -1,7 +1,7 @@
 .team {
   padding: 100px 60px;
   text-align: center;
-  background: linear-gradient(180deg, #f8fafc, #eef2ff);
+  background: radial-gradient(circle at top, #c8bbc6, 5px solid #38bdf8);
 }
 
 /* Title */
@@ -36,18 +36,25 @@
   padding: 32px;
   border-radius: 22px;
   text-align: left;
-  backdrop-filter: blur(8px);
+  backdrop-filter:none; /* remove blur */
   transition: transform 0.35s ease, box-shadow 0.35s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(4, 3, 3, 0.05);
   width: 100%;
-  max-width: 260px;
+  max-width: 320px;
   display: flex;          /* ✅ required */
   flex-direction: column; /* keeps cards neat */
 }
 
 .project-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+  transition: 0.3s;
+}
+
+.member-img {
+  width: 160px;       /* fixed width */
+  height: 200px;      /* fixed height */
+  border-radius:0%; /* circle shape */
+  object-fit: cover;  /* crop image nicely */
 }
 
 /* Role */
@@ -59,8 +66,9 @@
 
 /* Name */
 .member-name {
-  font-size: 1.05rem;
-  color: #374151;
+  font-size: 1.09rem;
+  font-style: normal;
+  color: #000000;
   line-height: 1.6;
   margin-bottom: 18px;
 }
@@ -76,7 +84,7 @@
 .social-links a {
   font-size: 1.2rem;
   text-decoration: none;
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   padding: 10px;
   border-radius: 50%;
   transition: all 0.3s ease;
@@ -86,6 +94,16 @@
   background: rgba(59, 130, 246, 0.25);
   transform: scale(1.1);
 }
+.linkedin-btn {
+  background: #0077b5;
+  color: rgb(0, 0, 0);
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+
 
 /* Responsive */
 @media (max-width: 900px) {

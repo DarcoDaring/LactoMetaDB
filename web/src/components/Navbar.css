@@ -1,96 +1,74 @@
-/* =========================
-   RESET
-========================= */
-* {
-  box-sizing: border-box;
-}
-
-/* =========================
-   NAVBAR (DARK PROFESSIONAL)
-========================= */
+/* NAVBAR */
 .navbar {
   width: 100%;
+  background: linear-gradient(135deg, #ede0d4, #d1c3b5); /* sky blue */
+  padding: 40px 0; /* increased height */
+  box-shadow: 0 5px 15px rgba(247, 248, 248, 0.044);
   position: sticky;
   top: 0;
   z-index: 100;
-
-  padding: 16px 56px;
-
-  background: #0f172a; /* dark slate */
-  border-bottom: 1px solid #1e293b;
 }
 
 /* INNER */
 .navbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  position: relative;
 }
 
-/* =========================
-   LOGO
-========================= */
+/* CENTER LOGO */
 .nav-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  font-family: "Archivo Black", sans-serif;
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-
-  color: #ffffff;
-  cursor: pointer;
+  gap: 10px;
+  font-size: 40px; /* bigger */
+  font-weight: 700;
+  color: #070707;
 }
 
-.logo-img {
-  height: 38px;
-  width: auto;
+/* LOGO IMAGE */
+.nav-logo-img {
+  width: 80px;
+  height: 70px;
+  object-fit: contain;
 }
 
-/* =========================
-   NAV LINKS
-========================= */
 .nav-links {
+  position: absolute;
+  right: 30px;   /* change from left to right */
   display: flex;
-  gap: 8px;
+  gap: 20px;
 }
-
+/* LINKS STYLE */
 .nav-links a {
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-
-  color: #cbd5f5;
-
-  padding: 10px 16px;
-  border-radius: 6px;
-
-  transition: background 0.25s ease, color 0.25s ease;
+  font-size: 16px;
+  color: #000000;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: 0.3s;
 }
 
-/* Hover */
+/* HOVER */
 .nav-links a:hover {
-  background: #1e293b;
-  color: #ffffff;
+  background: rgba(234, 230, 230, 0.6);
 }
 
-/* Active */
+/* ACTIVE */
 .nav-links a.active {
-  background: #4f46e5;
-  color: #ffffff;
+  background: white;
+  color: #030303;
   font-weight: 600;
 }
 
-/* =========================
-   HAMBURGER
-========================= */
+/* HAMBURGER RIGHT */
 .hamburger {
+  position: absolute;
+  right: 20px;
   display: none;
   flex-direction: column;
   gap: 6px;
@@ -100,31 +78,12 @@
 .hamburger span {
   width: 26px;
   height: 3px;
-  background: #ffffff;
+  background: #f0f1f4;
   border-radius: 4px;
-  transition: all 0.3s ease;
 }
 
-.hamburger.open span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.hamburger.open span:nth-child(2) {
-  opacity: 0;
-}
-
-.hamburger.open span:nth-child(3) {
-  transform: rotate(-45deg) translate(6px, -6px);
-}
-
-/* =========================
-   MOBILE MENU
-========================= */
+/* MOBILE */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 14px 22px;
-  }
-
   .hamburger {
     display: flex;
   }
@@ -132,23 +91,18 @@
   .nav-links {
     position: absolute;
     top: 70px;
-    right: 18px;
-
-    width: 220px;
-    padding: 18px;
-    gap: 10px;
-
-    background: #0f172a;
-    border-radius: 12px;
-
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-
+    left: 20px;
+    background: white;
     flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    border-radius: 16px;
+    width: 200px;
 
     opacity: 0;
     transform: translateY(-10px);
     pointer-events: none;
-    transition: all 0.25s ease;
+    transition: 0.3s;
   }
 
   .nav-links.show {
@@ -156,9 +110,7 @@
     transform: translateY(0);
     pointer-events: auto;
   }
-
-  .nav-links a {
-    text-align: center;
-    padding: 12px;
-  }
+  html {
+  scroll-behavior: smooth;
+}
 }

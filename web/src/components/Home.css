@@ -1,159 +1,135 @@
-/* ===== INTRO SECTION ===== */
+/* ===== HERO ===== */
+.hero {
+  padding: 40px 5%;
+  background: inear-gradient(135deg, #ffedd5, #fecaca);}
 
-.home-intro {
-  min-height: 100vh;
-  padding: 100px 60px;
-  background: #ffffff;
+/* MAIN CONTAINER */
+.hero-container {
+  background: rgba(241, 239, 238, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+/* ===== TOP SECTION ===== */
+.hero-top {
   display: flex;
   align-items: center;
+  gap: 30px;
 }
 
-.home-intro-container {
+/* LEFT TEXT */
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: 42px;
+  color: #030303;
+  margin-bottom: 15px;
+  font-style: normal;
+}
+
+.hero-text p {
+  color: #0c0c0c;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+/* RIGHT IMAGE */
+.hero-img {
+  flex: 1;
+}
+
+.hero-img img {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 60px;
-  align-items: stretch;
+  border-radius: 30px;
 }
 
-/* LEFT IMAGE */
-.home-intro-image {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 22px;
-}
-
-.home-intro-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* RIGHT CONTENT */
-.home-intro-content {
+/* ===== BOXES (Previously Cards) ===== */
+.hero-cards {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
 }
 
-.home-intro-content h2 {
-  font-size: 2.6rem;
-  color: #0f172a;
-  margin-bottom: 26px;
-  position: relative;
+/* BOX */
+.card {
+  flex: 1;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: 0.3s;
 }
 
-.home-intro-content h2::after {
-  content: "";
-  width: 70px;
-  height: 4px;
-  background: #bf4646;
-  display: block;
-  margin-top: 12px;
-  border-radius: 2px;
+/* HOVER EFFECT */
+.card:hover {
+  transform: translateY(-5px);
 }
 
-/* INTRO PARAGRAPH CONTAINER */
-.intro-text-box {
-  background: #f8fafc;
-  padding: 28px 32px;
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  border-left: 5px solid #bf4646;
+/* HEADER */
+.card-header {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 18px;
+  color: #2c3e50;
 }
 
-.intro-text-box p {
-  font-size: 1.08rem;
-  line-height: 1.85;
-  color: #475569;
-  margin-bottom: 20px;
-  text-align: justify;
+/* SUBTEXT */
+.card-sub {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 10px;
 }
 
-.intro-text-box p:last-child {
-  margin-bottom: 0;
-}
-
-/* ===== ABOUT SECTION ===== */
-
-.home-about {
-  padding: 90px 60px;
-  background: #f8fafc;
-}
-
-.home-about-container {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.home-about-container h2 {
-  font-size: 2.4rem;
-  color: #0f172a;
-  margin-bottom: 26px;
-  position: relative;
-}
-
-.home-about-container h2::after {
-  content: "";
-  width: 60px;
-  height: 4px;
-  background: #bf4646;
-  display: block;
-  margin-top: 12px;
-  border-radius: 2px;
-}
-
-.home-about-container p {
-  font-size: 1.08rem;
-  line-height: 1.85;
-  color: #475569;
-  margin-bottom: 22px;
-  text-align: justify;
-}
-
-/* ===== HOVER POLISH (DESKTOP) ===== */
-@media (hover: hover) {
-  .intro-text-box:hover {
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-    transition: all 0.25s ease;
-  }
+/* CONTENT */
+.card-content {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.6;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  .home-intro {
-    padding: 70px 30px;
+  .hero-top {
+    flex-direction: column;
   }
 
-  .home-intro-container {
-    grid-template-columns: 1fr;
+  .hero-cards {
+    flex-direction: column;
   }
+}
+/* MOBILE VIEW */
+@media (max-width: 768px) {
 
-  .home-intro-image {
-    height: 320px;
-  }
-
-  .home-intro-content {
+  .hero-top {
+    flex-direction: column;
     text-align: center;
   }
 
-  .home-intro-content h2::after,
-  .home-about-container h2::after {
-    margin-left: auto;
-    margin-right: auto;
+  .hero-cards {
+    flex-direction: column;
   }
 
-  .intro-text-box,
-  .home-about-container p {
-    text-align: left;
+  .hero-text h1 {
+    font-size: 28px;
   }
 
-  .home-about {
-    padding: 70px 30px;
+  .hero-text p {
+    font-size: 14px;
   }
+
+  .card {
+    width: 100%;
+  }
+
+}
+.hero-img img {
+  width: 100%;
+  height: auto;
 }

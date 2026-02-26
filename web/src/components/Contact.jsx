@@ -11,26 +11,36 @@ function Contact() {
       {/* Contact Info */}
       <div className="contact-grid">
         <div className="contact-box">
-          <div className="icon">📍</div>
-          <h4>Address</h4>
-          <p>
-            Dr Vidhya Niranjan<br />
-            RV College of Engineering<br />
-            Banglore-560059
-          </p>
-        </div>
+  <div className="icon">📍</div>
+  <h4>Address</h4>
+
+  <a
+    href="https://www.google.com/maps?q=RV+College+of+Engineering+Bangalore"
+    target="_blank"
+    rel="noreferrer"
+    className="map-link"
+  >
+    Dr Vidhya Niranjan<br />
+    RV College of Engineering<br />
+    Bangalore-560059
+  </a>
+</div>
 
         <div className="contact-box">
-          <div className="icon">📞</div>
-          <h4>Phone</h4>
-          <p>+91 9945465657</p>
-        </div>
+  <div className="icon">📞</div>
+  <h4>Phone</h4>
+  <a href="tel:+919945465657" className="contact-link">
+    +91 9945465657
+  </a>
+</div>
 
-        <div className="contact-box">
-          <div className="icon">✉️</div>
-          <h4>Email</h4>
-          <p>vidya.n@rvce.edu.in</p>
-        </div>
+<div className="contact-box">
+  <div className="icon">✉️</div>
+  <h4>Email</h4>
+  <a href="mailto:vidya.n@rvce.edu.in" className="contact-link">
+    vidya.n@rvce.edu.in
+  </a>
+</div>
       </div>
 
       {/* Contact Form */}

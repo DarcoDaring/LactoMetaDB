@@ -3,30 +3,34 @@ import "./Team.css";
 function Team() {
   const team = [
     {
-      title: "Research Supervisor",
-      name: "Dr. Vidhya Niranjan",
-      email: "vidhya@example.com",
-      linkedin: "https://linkedin.com",
-    },
-    {
-      title: "Research Scholar",
-      name: "Pooja Suresh Kumar",
-      email: "pooja@example.com",
-      linkedin: "https://linkedin.com",
-    },
-    {
-      title: "Data Curator",
-      name: "Likitha S",
-      email: "likitha@example.com",
-      linkedin: "https://linkedin.com",
-    },
-    {
-      title: "Alpha & Beta Tester",
-      name: "Dr. Anagha S Setlur, Chandrashekar K",
-      email: "tester@example.com",
-      linkedin: "https://linkedin.com",
-    },
-  ];
+      image: "/images/vidya.jpeg",
+      name: "Dr. Vidya Niranjan",
+    linkedin: "https://www.linkedin.com/in/vidya-niranjan",
+    
+  },
+  {
+    image: "/images/Pooja.jpeg",
+      name: "Pooja SureshKumar",
+    linkedin: "https://www.linkedin.com/in/t-s-pooja-sree",
+  },
+   {
+    image: "/images/Likitha.jpeg",
+      name: "Dr. Likitha S",
+    linkedin: "https://www.linkedin.com/in/likitha-s-055762181",
+  },
+  {
+    image: "/images/Anagha.jpeg",
+      name: "Dr. Anagha S Setlur",
+    linkedin: "https://www.linkedin.com/in/anagha-s-setlur",
+  },
+  {
+    image: "/images/Chandrashekar.jpeg",
+      name: "Dr. Chandrashekar K",
+    linkedin: "https://www.linkedin.com/in/chandrashekar-karunakaran-achari",
+  },
+  
+ 
+];
 
   return (
     <section className="team" id="projects">
@@ -38,21 +42,24 @@ function Team() {
       <div className="team-list">
         {team.map((member, index) => (
           <div className="project-card" key={index}>
+            
+            <img 
+  src={member.image} 
+  alt={member.name} 
+  className="member-img"
+/>
             <h3>{member.title}</h3>
             <p className="member-name">{member.name}</p>
 
             <div className="social-links">
-              <a href={`mailto:${member.email}`} title="Email">
-                ✉️
-              </a>
               <a
-                href={member.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                title="LinkedIn"
-              >
-                🔗
-              </a>
+  href={member.linkedin}
+  target="_blank"
+  rel="noreferrer"
+  className="linkedin-btn"
+>
+  LinkedIn
+</a>
             </div>
           </div>
         ))}
