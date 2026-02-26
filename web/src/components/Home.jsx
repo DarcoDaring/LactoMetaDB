@@ -6,7 +6,6 @@ function Hero() {
     <section className="hero" id="home">
       <div className="hero-container">
 
-        {/* TEXT + IMAGE SECTION */}
         <div className="hero-top">
 
           {/* LEFT TEXT */}
@@ -20,12 +19,12 @@ function Hero() {
             </p>
 
             <p>
-              It includes a variety of secondary metabolites including short-chain fatty acids (SCFAs),
-              organic acids, and bioactive peptides.
+              It includes a variety of secondary metabolites including short-chain
+              fatty acids (SCFAs), organic acids, and bioactive peptides.
             </p>
 
             <p>
-              The interaction of breastmilk microbes and their metabolites plays
+              The interaction of breast milk microbes and their metabolites plays
               a key role in immunological development.
             </p>
           </div>
@@ -34,7 +33,7 @@ function Hero() {
           <div className="hero-img">
             <img src={heroImg} alt="Breast milk microbiome" />
           </div>
-  
+
         </div>
 
       </div>

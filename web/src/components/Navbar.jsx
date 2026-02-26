@@ -18,7 +18,7 @@ function Navbar() {
         });
       },
       {
-        threshold: 0.5,   // 👈 improved detection
+        threshold: window.innerWidth < 768 ? 0.3 : 0.5,
       }
     );
 
@@ -29,8 +29,15 @@ function Navbar() {
     };
   }, []);
 
+  // Close menu on scroll (mobile UX)
+  useEffect(() => {
+    const handleScroll = () => setMenuOpen(false);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleClick = (section) => {
-    setActiveSection(section);   // 👈 update immediately on click
+    setActiveSection(section);
     setMenuOpen(false);
   };
 
@@ -38,32 +45,47 @@ function Navbar() {
     <header className="navbar">
       <div className="navbar-inner">
 
-        {/* LEFT LINKS */}
+        {/* NAV LINKS */}
         <nav className={`nav-links ${menuOpen ? "show" : ""}`}>
-          <a href="#home"
+          <a
+            href="#home"
             className={activeSection === "home" ? "active" : ""}
             onClick={() => handleClick("home")}
-          >Home</a>
+          >
+            Home
+          </a>
 
-          <a href="#about"
+          <a
+            href="#about"
             className={activeSection === "about" ? "active" : ""}
             onClick={() => handleClick("about")}
-          >About</a>
+          >
+            About
+          </a>
 
-          <a href="#search"
+          <a
+            href="#search"
             className={activeSection === "search" ? "active" : ""}
             onClick={() => handleClick("search")}
-          >Search</a>
+          >
+            Search
+          </a>
 
-          <a href="#projects"
+          <a
+            href="#projects"
             className={activeSection === "projects" ? "active" : ""}
             onClick={() => handleClick("projects")}
-          >Team</a>
+          >
+            Team
+          </a>
 
-          <a href="#contact"
+          <a
+            href="#contact"
             className={activeSection === "contact" ? "active" : ""}
             onClick={() => handleClick("contact")}
-          >Contact</a>
+          >
+            Contact
+          </a>
         </nav>
 
         {/* CENTER LOGO */}

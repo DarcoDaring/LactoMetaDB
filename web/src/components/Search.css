@@ -13,7 +13,7 @@
 ========================= */
 .search-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+  background: linear-gradient(135deg, #ede0d4, #d1c3b5);
   padding: 120px 20px;
 }
 
@@ -210,7 +210,7 @@
 .search-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #bf4646, #9f2f2f);
+  background: linear-gradient(135deg, #d1c3b5);
   color: white;
   border: none;
   border-radius: 16px;

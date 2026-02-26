@@ -21,7 +21,7 @@
 .team-list {
   margin-top: 60px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* force same line on desktop */
+  grid-template-columns: repeat(4, 1fr);
   gap: 32px;
   max-width: 1100px;
   margin-left: auto;
@@ -29,20 +29,19 @@
   justify-items: center;
 }
 
-
 /* Card */
 .project-card {
   background: rgba(255, 255, 255, 0.7);
   padding: 32px;
   border-radius: 22px;
-  text-align: left;
-  backdrop-filter:none; /* remove blur */
+  backdrop-filter: none;
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   border: 1px solid rgba(4, 3, 3, 0.05);
   width: 100%;
   max-width: 320px;
-  display: flex;          /* ✅ required */
-  flex-direction: column; /* keeps cards neat */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ center content */
 }
 
 .project-card:hover {
@@ -50,11 +49,14 @@
   transition: 0.3s;
 }
 
+/* Image */
 .member-img {
-  width: 160px;       /* fixed width */
-  height: 200px;      /* fixed height */
-  border-radius:0%; /* circle shape */
-  object-fit: cover;  /* crop image nicely */
+  width: 160px;
+  height: 200px;
+  border-radius: 0%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 16px auto; /* ✅ centered */
 }
 
 /* Role */
@@ -71,18 +73,18 @@
   color: #000000;
   line-height: 1.6;
   margin-bottom: 18px;
+  text-align: center;
 }
 
 /* Social icons */
 .social-links {
   display: flex;
   gap: 14px;
-  margin-top: auto;          /* ⭐ pushes icons to bottom */
+  margin-top: auto;
   justify-content: center;
 }
 
 .social-links a {
-  font-size: 1.2rem;
   text-decoration: none;
   background: rgba(0, 0, 0, 0.1);
   padding: 10px;
@@ -94,39 +96,31 @@
   background: rgba(59, 130, 246, 0.25);
   transform: scale(1.1);
 }
-.linkedin-btn {
-  background: #0077b5;
-  color: rgb(0, 0, 0);
-  padding: 8px 14px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-
 
 /* Responsive */
-@media (max-width: 900px) {
-  .team {
-    padding: 80px 30px;
+@media (max-width: 1024px) {
+  .team-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  .team {
+    padding: 60px 20px;
+  }
+
   .team-list {
-    grid-template-columns: 1fr; /* one card per row */
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .project-card {
-    max-width: 320px; /* slightly wider on mobile */
-    margin: 0 auto;
+    padding: 24px;
     text-align: center;
-    display: flex;              /* ✅ ADD */
-  flex-direction: column;
   }
 
-  .social-links {
-    justify-content: center;
-    margin-top: auto;
+  .member-img {
+    width: 140px;
+    height: 180px;
   }
 }
