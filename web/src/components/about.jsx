@@ -28,7 +28,8 @@ function About() {
           {/* LEFT TEXT */}
           <div className={`about-box ${show ? "slide-left" : ""}`}>
             <h1>
-              A comprehensive resource on <br /> breast milk microbiota
+              A comprehensive resource on <br />
+              breast milk microbiota
             </h1>
 
             <p>
@@ -39,54 +40,43 @@ function About() {
 
             <button
               className="overview-btn"
-              onClick={() => setShowImage(true)}
+              onClick={() => setShowImage(!showImage)}
             >
               View Overview
             </button>
           </div>
 
-          {/* RIGHT PLACEHOLDER (keeps layout animation) */}
-          <div className={`about-image ${show ? "slide-right" : ""}`}></div>
+          {/* RIGHT IMAGE — INLINE (OLD BEHAVIOR) */}
+          <div className={`about-image ${show ? "slide-right" : ""}`}>
+            {showImage && (
+              <div className="image-box">
+                <img
+                  src={workflowImg}
+                  alt="Workflow"
+                  className="workflow"
+                />
+              </div>
+            )}
+          </div>
+
         </div>
 
         {/* FEATURES */}
         <div className="features">
-          <div className="card"><h3>Catalog Breast Milk Microbes</h3></div>
-          <div className="card"><h3>Identify Metabolites’ Functions</h3></div>
-          <div className="card"><h3>Advance Infant Health Research</h3></div>
+          <div className="card">
+            <h3>Catalog Breast Milk Microbes</h3>
+          </div>
+          <div className="card">
+            <h3>Identify Metabolites’ Functions</h3>
+          </div>
+          <div className="card">
+            <h3>Advance Infant Health Research</h3>
+          </div>
         </div>
 
       </div>
-
-      {/* ✅ IMAGE MODAL — OUTSIDE layout */}
-      {showImage && (
-        <div
-          className="image-overlay"
-          onClick={() => setShowImage(false)}
-        >
-          <div
-            className="image-box"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={workflowImg}
-              alt="Workflow"
-              className="workflow"
-            />
-            <button
-              className="close-btn"
-              onClick={() => setShowImage(false)}
-              aria-label="Close image"
-            >
-              ✖
-            </button>
-          </div>
-        </div>
-      )}
-
     </section>
   );
-  
 }
 
 export default About;
