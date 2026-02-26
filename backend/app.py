@@ -9,7 +9,7 @@ CORS(app)
 # =========================
 # LOAD EXCEL DATA
 # =========================
-df = pd.read_excel("data/database_requirements.xlsx")
+df = pd.read_excel("data/database_requirements.csv")
 df.columns = df.columns.str.strip()
 
 print("EXCEL COLUMNS:", df.columns.tolist())
