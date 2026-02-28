@@ -1,100 +1,41 @@
 import { useEffect, useState, useRef } from "react";
 import "./Search.css";
 
-/* 🔑 BACKEND BASE URL (Railway in prod, localhost in dev) */
+/* 🔑 BACKEND BASE URL */
 const API_BASE = import.meta.env.VITE_API_URL;
 
 function Search() {
   const [microbes, setMicrobes] = useState([]);
   const [metabolites, setMetabolites] = useState([]);
-
   const [selectedMicrobe, setSelectedMicrobe] = useState("");
   const [selectedMetabolite, setSelectedMetabolite] = useState("");
-
   const [showMicrobeDropdown, setShowMicrobeDropdown] = useState(false);
   const [showMetaboliteDropdown, setShowMetaboliteDropdown] = useState(false);
-
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [searched, setSearched] = useState(false);
 
   const microbeRef = useRef(null);
   const metaboliteRef = useRef(null);
 
-  const [hasSearched, setHasSearched] = useState(false);
-  const [searched, setSearched] = useState(false);
-
-  /* =========================
-     INITIAL LOAD
-  ========================= */
+  /* INITIAL LOAD */
   useEffect(() => {
-    fetch(`${API_BASE}/api/microbes`)
-      .then(res => res.json())
-      .then(setMicrobes);
-
-    fetch(`${API_BASE}/api/metabolites`)
-      .then(res => res.json())
-      .then(setMetabolites);
+    fetch(`${API_BASE}/api/microbes`).then(r => r.json()).then(setMicrobes);
+    fetch(`${API_BASE}/api/metabolites`).then(r => r.json()).then(setMetabolites);
   }, []);
 
-  /* =========================
-     CLOSE DROPDOWNS
-  ========================= */
+  /* CLOSE DROPDOWNS */
   useEffect(() => {
-    const handler = (e) => {
-      if (microbeRef.current && !microbeRef.current.contains(e.target)) {
-        setShowMicrobeDropdown(false);
-      }
-      if (metaboliteRef.current && !metaboliteRef.current.contains(e.target)) {
-        setShowMetaboliteDropdown(false);
-      }
+    const h = e => {
+      if (microbeRef.current && !microbeRef.current.contains(e.target)) setShowMicrobeDropdown(false);
+      if (metaboliteRef.current && !metaboliteRef.current.contains(e.target)) setShowMetaboliteDropdown(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  /* =========================
-     DEPENDENT FETCH: MICROBE → METABOLITES
-  ========================= */
-  useEffect(() => {
-    if (!selectedMicrobe) {
-      fetch(`${API_BASE}/api/metabolites`)
-        .then(res => res.json())
-        .then(setMetabolites);
-      return;
-    }
-
-    fetch(
-      `${API_BASE}/api/metabolites/by-microbe?microbe=${encodeURIComponent(
-        selectedMicrobe
-      )}`
-    )
-      .then(res => res.json())
-      .then(setMetabolites);
-  }, [selectedMicrobe]);
-
-  /* =========================
-     DEPENDENT FETCH: METABOLITE → MICROBES
-  ========================= */
-  useEffect(() => {
-    if (!selectedMetabolite) {
-      fetch(`${API_BASE}/api/microbes`)
-        .then(res => res.json())
-        .then(setMicrobes);
-      return;
-    }
-
-    fetch(
-      `${API_BASE}/api/microbes/by-metabolite?metabolite=${encodeURIComponent(
-        selectedMetabolite
-      )}`
-    )
-      .then(res => res.json())
-      .then(setMicrobes);
-  }, [selectedMetabolite]);
-
-  /* =========================
-     SEARCH
-  ========================= */
+  /* SEARCH */
   const handleSearch = () => {
     if (hasSearched) {
       setSelectedMicrobe("");
@@ -106,8 +47,6 @@ function Search() {
     }
 
     setLoading(true);
-    setResults([]);
-
     fetch(`${API_BASE}/api/search`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -116,98 +55,30 @@ function Search() {
         metabolite: selectedMetabolite
       })
     })
-      .then(res => res.json())
+      .then(r => r.json())
       .then(data => {
         setResults(data);
         setHasSearched(true);
         setSearched(true);
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      });
   };
 
-  const filterOptions = (options, value) =>
-    options.filter(opt =>
-      opt.toLowerCase().includes(value.toLowerCase())
-    );
-
   return (
-    <section className="search-page" id="search">
+    <section className="search-page">
       <div className={`search-container ${searched ? "searched" : ""}`}>
         <div className="search-card">
           <h2 className="title">Search Records</h2>
 
           <div className="inputs">
-            {/* MICROBE */}
             <div className="input-group custom-select" ref={microbeRef}>
-              <input
-                type="text"
-                value={selectedMicrobe}
-                onChange={(e) => {
-                  setSelectedMicrobe(e.target.value);
-                  setSelectedMetabolite("");
-                  setHasSearched(false);
-                  setSearched(false);
-                  setShowMicrobeDropdown(true);
-                }}
-                onFocus={() => setShowMicrobeDropdown(true)}
-                placeholder=" "
-              />
+              <input value={selectedMicrobe} onChange={e => setSelectedMicrobe(e.target.value)} placeholder=" " />
               <label>Select The Microbes</label>
-              <span className="select-icon">▾</span>
-
-              {showMicrobeDropdown && (
-                <div className="dropdown">
-                  {filterOptions(microbes, selectedMicrobe).map((m, i) => (
-                    <div
-                      key={i}
-                      className="dropdown-item"
-                      onClick={() => {
-                        setSelectedMicrobe(m);
-                        setShowMicrobeDropdown(false);
-                      }}
-                    >
-                      {m}
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
-            {/* METABOLITE */}
             <div className="input-group custom-select" ref={metaboliteRef}>
-              <input
-                type="text"
-                value={selectedMetabolite}
-                onChange={(e) => {
-                  setSelectedMetabolite(e.target.value);
-                  setSelectedMicrobe("");
-                  setHasSearched(false);
-                  setSearched(false);
-                  setShowMetaboliteDropdown(true);
-                }}
-                onFocus={() => setShowMetaboliteDropdown(true)}
-                placeholder=" "
-              />
+              <input value={selectedMetabolite} onChange={e => setSelectedMetabolite(e.target.value)} placeholder=" " />
               <label>Select The Metabolites</label>
-              <span className="select-icon">▾</span>
-
-              {showMetaboliteDropdown && (
-                <div className="dropdown">
-                  {filterOptions(metabolites, selectedMetabolite).map((m, i) => (
-                    <div
-                      key={i}
-                      className="dropdown-item"
-                      onClick={() => {
-                        setSelectedMetabolite(m);
-                        setShowMetaboliteDropdown(false);
-                      }}
-                    >
-                      {m}
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
@@ -217,62 +88,23 @@ function Search() {
         </div>
       </div>
 
-      {/* RESULTS */}
       {results.length > 0 && (
-        <div className="results-container slide-in">
-          <h3 className="results-title">Search Results</h3>
-
+        <div className="results-container">
           {results.map((row, i) => (
             <div className="result-card" key={i}>
-              <div className="result-top">
-                <span className="label">Pathway</span>
-                <h4 className="primary-text">{row["Pathways Name"]}</h4>
-              </div>
+              <h4>{row["Pathways Name"]}</h4>
 
-              <div className="result-grid">
-                <div>
-                  <span className="label">Metabolite</span>
-                  <p>{row.Metabolites}</p>
-                </div>
-                <div>
-                  <span className="label">Microbe</span>
-                  <p>{row.Microbes}</p>
-                </div>
-              </div>
+              <p><strong>Metabolite:</strong> {row.Metabolites}</p>
+              <p><strong>Function in Infants:</strong> {row["Function in Infants"]}</p>
+              <p><strong>Microbe:</strong> {row.Microbes}</p>
 
-              <div className="result-links-column">
-                {/* MAP */}
-                <div className="result-link-block">
-                  <span className="label">Map</span><br />
-                  {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"] !== "Not Available" ? (
-                    <a
-                      href={row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {row["map [KEGG & BioCyC maps-Gastrointestinal tract]"]}
-                    </a>
-                  ) : (
-                    <p className="na-text">Not Available</p>
-                  )}
-                </div>
+              {row.Pathway !== "Not Available" && (
+                <a href={row.Pathway} target="_blank">Pathway Map</a>
+              )}
 
-                {/* DOI */}
-                <div className="result-link-block">
-                  <span className="label">DOI</span><br />
-                  {row.DOI !== "Not Available" ? (
-                    <a
-                      href={`https://doi.org/${row.DOI}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {row.DOI}
-                    </a>
-                  ) : (
-                    <p className="na-text">Not Available</p>
-                  )}
-                </div>
-              </div>
+              {row.DOI !== "Not Available" && (
+                <a href={`https://doi.org/${row.DOI}`} target="_blank">DOI</a>
+              )}
             </div>
           ))}
         </div>

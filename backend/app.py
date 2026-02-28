@@ -28,12 +28,13 @@ def load_excel():
 load_excel()
 
 # =========================
-# COLUMN NAMES
+# COLUMN NAMES (UPDATED)
 # =========================
 MICROBE_COL = "Microbes"
 METABOLITE_COL = "Metabolites"
 PATHWAY_COL = "Pathways Name"
-MAP_COL = "map [KEGG & BioCyC maps-Gastrointestinal tract]"
+MAP_COL = "Pathway"                     # ✅ UPDATED
+FUNCTION_INFANTS_COL = "Function in Infants"
 DOI_COL = "DOI"
 
 # =========================
@@ -75,7 +76,7 @@ def microbes_by_metabolite():
     return jsonify(sorted(f[MICROBE_COL].dropna().unique().tolist()))
 
 # =========================
-# SEARCH
+# SEARCH (UPDATED)
 # =========================
 @app.route("/api/search", methods=["POST"])
 def search():
@@ -90,7 +91,16 @@ def search():
         if len(w) > 2:
             result = result[result[METABOLITE_COL].astype(str).apply(lambda x: w in normalize(x))]
 
-    result = result[[MICROBE_COL, METABOLITE_COL, PATHWAY_COL, MAP_COL, DOI_COL]]
+    result = result[
+        [
+            MICROBE_COL,
+            METABOLITE_COL,
+            PATHWAY_COL,
+            MAP_COL,
+            FUNCTION_INFANTS_COL,
+            DOI_COL
+        ]
+    ]
 
     return jsonify([
         {
@@ -98,6 +108,7 @@ def search():
             METABOLITE_COL: safe_value(r[METABOLITE_COL]),
             PATHWAY_COL: safe_value(r[PATHWAY_COL]),
             MAP_COL: safe_value(r[MAP_COL]),
+            FUNCTION_INFANTS_COL: safe_value(r[FUNCTION_INFANTS_COL]),
             DOI_COL: safe_value(r[DOI_COL]),
         }
         for _, r in result.iterrows()
@@ -109,7 +120,7 @@ def search():
 @app.route("/api/login", methods=["POST", "OPTIONS"])
 def login():
     if request.method == "OPTIONS":
-        return jsonify({"ok": True}), 200
+        return jsonify(ok=True), 200
 
     d = request.json or {}
     if d.get("username") == "admin" and d.get("password") == "admin123":
