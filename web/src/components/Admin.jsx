@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Admin.css";
 
-/* 🔑 SAME PATTERN AS Search.jsx */
+/* 🔑 BACKEND BASE URL */
 const API_BASE = import.meta.env.VITE_API_URL;
 
 function Admin() {
@@ -14,7 +14,10 @@ function Admin() {
 
   const [currentFile, setCurrentFile] = useState("");
   const [file, setFile] = useState(null);
+
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // success | error
+  const [uploading, setUploading] = useState(false); // 🔑 LOADING STATE
 
   /* =====================
      LOGIN
@@ -32,7 +35,10 @@ function Admin() {
         if (!res.ok) throw new Error();
         setLoggedIn(true);
       })
-      .catch(() => setMessage("Invalid username or password"));
+      .catch(() => {
+        setMessage("Invalid username or password.");
+        setMessageType("error");
+      });
   };
 
   /* =====================
@@ -53,6 +59,10 @@ function Admin() {
     e.preventDefault();
     if (!file) return;
 
+    setUploading(true);
+    setMessage("");
+    setMessageType("");
+
     const formData = new FormData();
     formData.append("file", file);
 
@@ -60,13 +70,23 @@ function Admin() {
       method: "POST",
       body: formData
     })
-      .then(res => res.json())
-      .then(data => {
-        setMessage(data.message);
+      .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(() => {
+        setMessage("Excel file updated successfully. The database is now refreshed.");
+        setMessageType("success");
         setCurrentFile(file.name);
         setFile(null);
       })
-      .catch(() => setMessage("Upload failed"));
+      .catch(() => {
+        setMessage("Upload failed. Please verify the Excel format and try again.");
+        setMessageType("error");
+      })
+      .finally(() => {
+        setUploading(false);
+      });
   };
 
   /* =====================
@@ -122,7 +142,7 @@ function Admin() {
       <div className="admin-card">
         <h2>Admin Panel</h2>
 
-        <p>
+        <p className="current-file">
           <strong>Current Excel File:</strong> {currentFile}
         </p>
 
@@ -131,15 +151,26 @@ function Admin() {
             type="file"
             accept=".xlsx"
             onChange={(e) => setFile(e.target.files[0])}
+            disabled={uploading}
             required
           />
-          <button type="submit">Upload New Excel</button>
+
+          <button type="submit" disabled={uploading}>
+            {uploading ? (
+              <span className="loader"></span>
+            ) : (
+              "Upload New Excel"
+            )}
+          </button>
         </form>
 
-        {message && <p className="success">{message}</p>}
+        {message && (
+          <p className={messageType === "success" ? "success" : "error"}>
+            {message}
+          </p>
+        )}
       </div>
 
-      {/* BELOW CONTAINER */}
       <button className="logout-btn" onClick={logout}>
         Logout
       </button>

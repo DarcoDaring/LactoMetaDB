@@ -1,10 +1,10 @@
 .admin-page {
   min-height: 100vh;
   display: flex;
-  flex-direction: column; /* ✅ STACK ITEMS VERTICALLY */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px; /* ✅ space between card and logout */
+  gap: 20px;
   background: #f4f6f8;
 }
 
@@ -19,6 +19,12 @@
 .admin-card h2 {
   text-align: center;
   margin-bottom: 25px;
+}
+
+.current-file {
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: #333;
 }
 
 .admin-form {
@@ -41,11 +47,48 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.admin-form button:hover {
-  opacity: 0.85;
+.admin-form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
+
+/* 🔄 LOADER */
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* MESSAGES */
+.success {
+  margin-top: 14px;
+  color: #2e7d32;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.error {
+  margin-top: 14px;
+  color: #c62828;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .logout-btn {
   padding: 10px 26px;
   background: #c62828;
