@@ -3,39 +3,51 @@ from flask_cors import CORS
 import pandas as pd
 import re
 import os
+import tempfile
+
+from supabase import create_client
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # =========================
-# FILE PATHS (RAILWAY SAFE)
+# SUPABASE CONFIG (ENV VARS)
 # =========================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-EXCEL_FILE = os.path.join(DATA_DIR, "database_requirements.xlsx")
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_BUCKET = os.environ.get("SUPABASE_BUCKET", "excel-data")
+SUPABASE_EXCEL_NAME = os.environ.get(
+    "SUPABASE_EXCEL_NAME", "database_requirements.xlsx"
+)
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError("Supabase credentials are missing")
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # =========================
 # GLOBAL DATAFRAME
 # =========================
 df = None
 
-def load_excel():
-    global df
-    df = pd.read_excel(EXCEL_FILE)
-    df.columns = df.columns.str.strip()
-    print("Excel loaded:", df.columns.tolist())
-
-load_excel()
-
 # =========================
-# COLUMN NAMES (UPDATED)
+# COLUMN NAMES (LATEST)
 # =========================
 MICROBE_COL = "Microbes"
 METABOLITE_COL = "Metabolites"
 PATHWAY_COL = "Pathways Name"
-MAP_COL = "Pathway"                     # ✅ UPDATED
+MAP_COL = "Pathway"
 FUNCTION_INFANTS_COL = "Function in Infants"
 DOI_COL = "DOI"
+
+REQUIRED_COLUMNS = {
+    MICROBE_COL,
+    METABOLITE_COL,
+    PATHWAY_COL,
+    MAP_COL,
+    FUNCTION_INFANTS_COL,
+    DOI_COL,
+}
 
 # =========================
 # HELPERS
@@ -49,7 +61,36 @@ def safe_value(value):
     return str(value)
 
 # =========================
-# DROPDOWNS
+# LOAD EXCEL FROM SUPABASE
+# =========================
+def load_excel():
+    global df
+
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
+            supabase.storage.from_(SUPABASE_BUCKET).download(
+                SUPABASE_EXCEL_NAME, tmp.name
+            )
+            df = pd.read_excel(tmp.name)
+
+        df.columns = df.columns.str.strip()
+
+        missing = REQUIRED_COLUMNS - set(df.columns)
+        if missing:
+            raise ValueError(f"Missing columns in Excel: {missing}")
+
+        print("Excel loaded from Supabase:", df.columns.tolist())
+
+    except Exception as e:
+        print("❌ Failed to load Excel from Supabase:", e)
+        df = pd.DataFrame(columns=list(REQUIRED_COLUMNS))
+
+
+# Load on startup
+load_excel()
+
+# =========================
+# DROPDOWN APIs
 # =========================
 @app.route("/api/microbes")
 def microbes():
@@ -76,7 +117,7 @@ def microbes_by_metabolite():
     return jsonify(sorted(f[MICROBE_COL].dropna().unique().tolist()))
 
 # =========================
-# SEARCH (UPDATED)
+# SEARCH API
 # =========================
 @app.route("/api/search", methods=["POST"])
 def search():
@@ -85,11 +126,15 @@ def search():
 
     for w in normalize(data.get("microbe", "")).split():
         if len(w) > 2:
-            result = result[result[MICROBE_COL].astype(str).apply(lambda x: w in normalize(x))]
+            result = result[result[MICROBE_COL].astype(str).apply(
+                lambda x: w in normalize(x)
+            )]
 
     for w in normalize(data.get("metabolite", "")).split():
         if len(w) > 2:
-            result = result[result[METABOLITE_COL].astype(str).apply(lambda x: w in normalize(x))]
+            result = result[result[METABOLITE_COL].astype(str).apply(
+                lambda x: w in normalize(x)
+            )]
 
     result = result[
         [
@@ -98,7 +143,7 @@ def search():
             PATHWAY_COL,
             MAP_COL,
             FUNCTION_INFANTS_COL,
-            DOI_COL
+            DOI_COL,
         ]
     ]
 
@@ -125,27 +170,40 @@ def login():
     d = request.json or {}
     if d.get("username") == "admin" and d.get("password") == "admin123":
         return jsonify(success=True)
+
     return jsonify(success=False), 401
 
 # =========================
-# ADMIN
+# ADMIN APIs
 # =========================
 @app.route("/api/admin/current-file")
 def current_file():
-    return jsonify({"file": os.path.basename(EXCEL_FILE)})
+    return jsonify({"file": SUPABASE_EXCEL_NAME})
 
 @app.route("/api/admin/upload-excel", methods=["POST"])
 def upload_excel():
     if "file" not in request.files:
-        return jsonify(error="No file"), 400
+        return jsonify(error="No file uploaded"), 400
 
-    f = request.files["file"]
-    if not f.filename.endswith(".xlsx"):
-        return jsonify(error="Invalid file type"), 400
+    file = request.files["file"]
 
-    f.save(EXCEL_FILE)
-    load_excel()
-    return jsonify(message="Excel updated successfully")
+    if not file.filename.endswith(".xlsx"):
+        return jsonify(error="Only .xlsx files allowed"), 400
+
+    try:
+        supabase.storage.from_(SUPABASE_BUCKET).upload(
+            SUPABASE_EXCEL_NAME,
+            file.read(),
+            {"content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+            upsert=True,  # ✅ REPLACE OLD FILE
+        )
+
+        load_excel()
+
+        return jsonify(success=True, message="Excel uploaded & reloaded")
+
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 # =========================
 # RUN (RAILWAY)
