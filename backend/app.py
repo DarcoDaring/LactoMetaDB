@@ -24,7 +24,7 @@ SUPABASE_EXCEL_NAME = os.environ.get(
 )
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise RuntimeError("❌ Supabase credentials missing")
+    raise RuntimeError("Supabase credentials missing")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -68,7 +68,6 @@ def safe_value(value):
 # =========================
 def load_excel():
     global df
-
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
             data = supabase.storage.from_(SUPABASE_BUCKET).download(
@@ -195,20 +194,29 @@ def upload_excel():
         return jsonify(error="Only .xlsx files allowed"), 400
 
     try:
-        supabase.storage.from_(SUPABASE_BUCKET).upload(
+        storage = supabase.storage.from_(SUPABASE_BUCKET)
+
+        # 🔥 Delete old file first (important!)
+        try:
+            storage.remove([SUPABASE_EXCEL_NAME])
+        except Exception:
+            pass
+
+        # Upload new Excel
+        storage.upload(
             SUPABASE_EXCEL_NAME,
             file.read(),
-            {
+            file_options={
                 "content-type":
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            },
-            upsert=True,  # ✅ REPLACE OLD FILE
+            }
         )
 
         load_excel()
         return jsonify(success=True, message="Excel uploaded and reloaded")
 
     except Exception as e:
+        print("❌ Upload failed:", e)
         return jsonify(error=str(e)), 500
 
 # =========================
