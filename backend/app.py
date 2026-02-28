@@ -5,13 +5,16 @@ import re
 import os
 import tempfile
 
-from supabase import create_client
+from supabase import Client, create_client
 
+# =========================
+# APP SETUP
+# =========================
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # =========================
-# SUPABASE CONFIG (ENV VARS)
+# SUPABASE CONFIG
 # =========================
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
@@ -21,14 +24,9 @@ SUPABASE_EXCEL_NAME = os.environ.get(
 )
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise RuntimeError("Supabase credentials are missing")
+    raise RuntimeError("❌ Supabase credentials missing")
 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# =========================
-# GLOBAL DATAFRAME
-# =========================
-df = None
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # =========================
 # COLUMN NAMES (LATEST)
@@ -50,6 +48,11 @@ REQUIRED_COLUMNS = {
 }
 
 # =========================
+# GLOBAL DATAFRAME
+# =========================
+df = pd.DataFrame(columns=list(REQUIRED_COLUMNS))
+
+# =========================
 # HELPERS
 # =========================
 def normalize(text):
@@ -68,25 +71,26 @@ def load_excel():
 
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
-            supabase.storage.from_(SUPABASE_BUCKET).download(
-                SUPABASE_EXCEL_NAME, tmp.name
+            data = supabase.storage.from_(SUPABASE_BUCKET).download(
+                SUPABASE_EXCEL_NAME
             )
-            df = pd.read_excel(tmp.name)
+            with open(tmp.name, "wb") as f:
+                f.write(data)
 
+        df = pd.read_excel(tmp.name)
         df.columns = df.columns.str.strip()
 
         missing = REQUIRED_COLUMNS - set(df.columns)
         if missing:
-            raise ValueError(f"Missing columns in Excel: {missing}")
+            raise ValueError(f"Missing columns: {missing}")
 
-        print("Excel loaded from Supabase:", df.columns.tolist())
+        print("✅ Excel loaded from Supabase:", df.columns.tolist())
 
     except Exception as e:
         print("❌ Failed to load Excel from Supabase:", e)
         df = pd.DataFrame(columns=list(REQUIRED_COLUMNS))
 
-
-# Load on startup
+# Load Excel on startup
 load_excel()
 
 # =========================
@@ -126,15 +130,15 @@ def search():
 
     for w in normalize(data.get("microbe", "")).split():
         if len(w) > 2:
-            result = result[result[MICROBE_COL].astype(str).apply(
-                lambda x: w in normalize(x)
-            )]
+            result = result[
+                result[MICROBE_COL].astype(str).apply(lambda x: w in normalize(x))
+            ]
 
     for w in normalize(data.get("metabolite", "")).split():
         if len(w) > 2:
-            result = result[result[METABOLITE_COL].astype(str).apply(
-                lambda x: w in normalize(x)
-            )]
+            result = result[
+                result[METABOLITE_COL].astype(str).apply(lambda x: w in normalize(x))
+            ]
 
     result = result[
         [
@@ -194,13 +198,15 @@ def upload_excel():
         supabase.storage.from_(SUPABASE_BUCKET).upload(
             SUPABASE_EXCEL_NAME,
             file.read(),
-            {"content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+            {
+                "content-type":
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
             upsert=True,  # ✅ REPLACE OLD FILE
         )
 
         load_excel()
-
-        return jsonify(success=True, message="Excel uploaded & reloaded")
+        return jsonify(success=True, message="Excel uploaded and reloaded")
 
     except Exception as e:
         return jsonify(error=str(e)), 500
