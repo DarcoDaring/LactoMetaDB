@@ -38,7 +38,7 @@ if not ADMIN_USERNAME or not ADMIN_PASSWORD:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # =========================
-# COLUMN NAMES (LATEST)
+# COLUMN NAMES
 # =========================
 MICROBE_COL = "Microbes"
 METABOLITE_COL = "Metabolites"
@@ -92,13 +92,16 @@ def load_excel():
         if missing:
             raise ValueError(f"Missing columns: {missing}")
 
-        print("✅ Excel loaded from Supabase:", df.columns.tolist())
+        # 🔑 Clean empty rows
+        df.dropna(how="all", inplace=True)
+
+        print("✅ Excel loaded | Rows:", len(df))
 
     except Exception as e:
-        print("❌ Failed to load Excel from Supabase:", e)
+        print("❌ Failed to load Excel:", e)
         df = pd.DataFrame(columns=list(REQUIRED_COLUMNS))
 
-# Load Excel on startup
+# Load on startup
 load_excel()
 
 # =========================
@@ -139,13 +142,15 @@ def search():
     for w in normalize(data.get("microbe", "")).split():
         if len(w) > 2:
             result = result[
-                result[MICROBE_COL].astype(str).apply(lambda x: w in normalize(x))
+                result[MICROBE_COL].astype(str)
+                .apply(lambda x: w in normalize(x))
             ]
 
     for w in normalize(data.get("metabolite", "")).split():
         if len(w) > 2:
             result = result[
-                result[METABOLITE_COL].astype(str).apply(lambda x: w in normalize(x))
+                result[METABOLITE_COL].astype(str)
+                .apply(lambda x: w in normalize(x))
             ]
 
     result = result[
@@ -209,22 +214,19 @@ def upload_excel():
     try:
         storage = supabase.storage.from_(SUPABASE_BUCKET)
 
-        # Delete old file
-        try:
-            storage.remove([SUPABASE_EXCEL_NAME])
-        except Exception:
-            pass
-
+        # 🔥 IMPORTANT FIX: overwrite atomically
         storage.upload(
             SUPABASE_EXCEL_NAME,
             file.read(),
             file_options={
                 "content-type":
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "upsert": True
             }
         )
 
         load_excel()
+
         return jsonify(success=True, message="Excel uploaded and reloaded")
 
     except Exception as e:
