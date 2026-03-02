@@ -1,5 +1,5 @@
 import "./Home.css";
-import heroImg from "../assets/images/bgef.png";
+import heroImg from "../assets/images/logo.png";
 
 function Hero() {
   return (

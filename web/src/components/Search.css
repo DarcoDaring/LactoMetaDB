@@ -239,7 +239,7 @@
 .results-container {
   max-width: 900px;
   margin: 0 auto;
-  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  background: #EDDCC6;
   padding: 34px;
   border-radius: 22px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.14);
@@ -255,7 +255,7 @@
    RESULT CARD
 ========================= */
 .result-card {
-  background: linear-gradient(145deg, #ecfeff, #cffafe);
+  background: #FFF4EA;
   padding: 24px;
   border-radius: 18px;
   margin-bottom: 22px;
@@ -269,7 +269,8 @@
 
 .label {
   font-size: 11px;
-  color: #64748b;
+  color: #BF4646;
+  
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -316,9 +317,14 @@
 
 .result-link-block a {
   font-size: 14px;
-  color: #bf4646;
+  color: #ffffff;
   text-decoration: none;
   word-break: break-all;
+
+  display: inline-block;          /* key part */
+   background: linear-gradient(135deg, #d1c3b5);      /* box color */
+  padding: 8px 12px;
+  border-radius: 6px;
 }
 
 .result-link-block a:hover {

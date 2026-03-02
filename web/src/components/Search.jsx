@@ -224,16 +224,17 @@ function Search() {
 
           {results.map((row, i) => (
             <div className="result-card" key={i}>
-              <div className="result-top">
-                <span className="label">Pathway</span>
-                <h4 className="primary-text">{row["Pathways Name"]}</h4>
-              </div>
+              
 
               <div className="result-grid">
                 {/* METABOLITE + FUNCTION */}
                 <div>
                   <span className="label">Metabolite</span>
                   <p>{row.Metabolites}</p>
+                  <div className="result-top">
+                <span className="label">Pathway</span>
+                <h4 className="primary-text">{row["Pathways Name"]}</h4>
+              </div>
 
                   <div style={{ marginTop: "10px" }}>
                     <span className="label">Function in Infants</span>
