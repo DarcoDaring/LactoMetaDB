@@ -4,6 +4,7 @@ import pandas as pd
 import re
 import os
 import tempfile
+from io import BytesIO
 
 from supabase import Client, create_client
 
@@ -24,7 +25,7 @@ SUPABASE_EXCEL_NAME = os.environ.get(
 )
 
 # =========================
-# ADMIN CREDENTIALS (FROM ENV)
+# ADMIN CREDENTIALS
 # =========================
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
@@ -73,7 +74,7 @@ def safe_value(value):
     return str(value)
 
 # =========================
-# LOAD EXCEL FROM SUPABASE
+# LOAD EXCEL FROM SUPABASE (startup only)
 # =========================
 def load_excel():
     global df
@@ -87,21 +88,15 @@ def load_excel():
 
         df = pd.read_excel(tmp.name)
         df.columns = df.columns.str.strip()
-
-        missing = REQUIRED_COLUMNS - set(df.columns)
-        if missing:
-            raise ValueError(f"Missing columns: {missing}")
-
-        # Remove completely empty rows
         df.dropna(how="all", inplace=True)
 
-        print("✅ Excel loaded | Rows:", len(df))
+        print("✅ Excel loaded from Supabase | Rows:", len(df))
 
     except Exception as e:
         print("❌ Failed to load Excel:", e)
         df = pd.DataFrame(columns=list(REQUIRED_COLUMNS))
 
-# Load on startup
+# Load once on startup
 load_excel()
 
 # =========================
@@ -153,31 +148,15 @@ def search():
                 .apply(lambda x: w in normalize(x))
             ]
 
-    result = result[
-        [
-            MICROBE_COL,
-            METABOLITE_COL,
-            PATHWAY_COL,
-            MAP_COL,
-            FUNCTION_INFANTS_COL,
-            DOI_COL,
-        ]
-    ]
+    result = result[list(REQUIRED_COLUMNS)]
 
     return jsonify([
-        {
-            MICROBE_COL: safe_value(r[MICROBE_COL]),
-            METABOLITE_COL: safe_value(r[METABOLITE_COL]),
-            PATHWAY_COL: safe_value(r[PATHWAY_COL]),
-            MAP_COL: safe_value(r[MAP_COL]),
-            FUNCTION_INFANTS_COL: safe_value(r[FUNCTION_INFANTS_COL]),
-            DOI_COL: safe_value(r[DOI_COL]),
-        }
-        for _, r in result.iterrows()
+        {col: safe_value(row[col]) for col in REQUIRED_COLUMNS}
+        for _, row in result.iterrows()
     ])
 
 # =========================
-# LOGIN (ENV-BASED)
+# LOGIN
 # =========================
 @app.route("/api/login", methods=["POST", "OPTIONS"])
 def login():
@@ -185,11 +164,7 @@ def login():
         return jsonify(ok=True), 200
 
     d = request.json or {}
-
-    if (
-        d.get("username") == ADMIN_USERNAME
-        and d.get("password") == ADMIN_PASSWORD
-    ):
+    if d.get("username") == ADMIN_USERNAME and d.get("password") == ADMIN_PASSWORD:
         return jsonify(success=True)
 
     return jsonify(success=False), 401
@@ -203,6 +178,8 @@ def current_file():
 
 @app.route("/api/admin/upload-excel", methods=["POST"])
 def upload_excel():
+    global df
+
     if "file" not in request.files:
         return jsonify(error="No file uploaded"), 400
 
@@ -212,35 +189,39 @@ def upload_excel():
         return jsonify(error="Only .xlsx files allowed"), 400
 
     try:
-        storage = supabase.storage.from_(SUPABASE_BUCKET)
+        file_bytes = file.read()
 
-        # Remove old file safely
+        # Upload to Supabase
+        storage = supabase.storage.from_(SUPABASE_BUCKET)
         try:
             storage.remove([SUPABASE_EXCEL_NAME])
         except Exception:
             pass
 
-        # Upload new file
         storage.upload(
             SUPABASE_EXCEL_NAME,
-            file.read(),
+            file_bytes,
             file_options={
                 "content-type":
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             }
         )
 
-        # Reload DataFrame
-        load_excel()
+        # 🔥 LOAD DIRECTLY FROM UPLOADED FILE (NO CACHE)
+        df = pd.read_excel(BytesIO(file_bytes))
+        df.columns = df.columns.str.strip()
+        df.dropna(how="all", inplace=True)
 
-        return jsonify(success=True, message="Excel uploaded and reloaded")
+        print("✅ Excel loaded from upload | Rows:", len(df))
+
+        return jsonify(success=True, message="Excel uploaded and data refreshed")
 
     except Exception as e:
         print("❌ Upload failed:", e)
         return jsonify(error=str(e)), 500
 
 # =========================
-# RUN (RAILWAY)
+# RUN
 # =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
