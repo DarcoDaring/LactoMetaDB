@@ -92,7 +92,7 @@ def load_excel():
         if missing:
             raise ValueError(f"Missing columns: {missing}")
 
-        # 🔑 Clean empty rows
+        # Remove completely empty rows
         df.dropna(how="all", inplace=True)
 
         print("✅ Excel loaded | Rows:", len(df))
@@ -214,17 +214,23 @@ def upload_excel():
     try:
         storage = supabase.storage.from_(SUPABASE_BUCKET)
 
-        # 🔥 IMPORTANT FIX: overwrite atomically
+        # Remove old file safely
+        try:
+            storage.remove([SUPABASE_EXCEL_NAME])
+        except Exception:
+            pass
+
+        # Upload new file
         storage.upload(
             SUPABASE_EXCEL_NAME,
             file.read(),
             file_options={
                 "content-type":
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "upsert": True
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             }
         )
 
+        # Reload DataFrame
         load_excel()
 
         return jsonify(success=True, message="Excel uploaded and reloaded")
