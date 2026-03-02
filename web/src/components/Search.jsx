@@ -256,7 +256,7 @@ function Search() {
               <div className="result-links-column">
                 {/* PATHWAY MAP */}
                 <div className="result-link-block">
-                  <span className="label">Map</span><br />
+                  <span className="label">URL</span><br />
                   {row.Pathway !== "Not Available" ? (
                     <a
                       href={row.Pathway}

@@ -20,7 +20,7 @@ function Contact() {
     rel="noreferrer"
     className="map-link"
   >
-    Dr Vidhya Niranjan<br />
+     Vidhya Niranjan<br />
     RV College of Engineering<br />
     Bangalore-560059
   </a>

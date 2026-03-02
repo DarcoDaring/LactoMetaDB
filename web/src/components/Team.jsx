@@ -15,7 +15,7 @@ function Team() {
     },
     {
       image: "/images/Likitha.jpeg",
-      name: "Dr. Likitha S",
+      name: " Likitha S",
       linkedin: "https://www.linkedin.com/in/likitha-s-055762181",
     },
     {
