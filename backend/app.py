@@ -23,8 +23,17 @@ SUPABASE_EXCEL_NAME = os.environ.get(
     "SUPABASE_EXCEL_NAME", "database_requirements.xlsx"
 )
 
+# =========================
+# ADMIN CREDENTIALS (FROM ENV)
+# =========================
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
+
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise RuntimeError("Supabase credentials missing")
+
+if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+    raise RuntimeError("Admin credentials missing")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -163,7 +172,7 @@ def search():
     ])
 
 # =========================
-# LOGIN
+# LOGIN (ENV-BASED)
 # =========================
 @app.route("/api/login", methods=["POST", "OPTIONS"])
 def login():
@@ -171,7 +180,11 @@ def login():
         return jsonify(ok=True), 200
 
     d = request.json or {}
-    if d.get("username") == "admin" and d.get("password") == "admin123":
+
+    if (
+        d.get("username") == ADMIN_USERNAME
+        and d.get("password") == ADMIN_PASSWORD
+    ):
         return jsonify(success=True)
 
     return jsonify(success=False), 401
@@ -196,13 +209,12 @@ def upload_excel():
     try:
         storage = supabase.storage.from_(SUPABASE_BUCKET)
 
-        # 🔥 Delete old file first (important!)
+        # Delete old file
         try:
             storage.remove([SUPABASE_EXCEL_NAME])
         except Exception:
             pass
 
-        # Upload new Excel
         storage.upload(
             SUPABASE_EXCEL_NAME,
             file.read(),
