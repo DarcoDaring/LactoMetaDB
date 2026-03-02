@@ -42,6 +42,15 @@ function Contact() {
   </a>
 </div>
       </div>
+      {/* WRITE TO US BUTTON */}
+      <div className="contact-action">
+        <a
+          href="mailto:lactometadb@gmail.com"
+          className="write-btn"
+        >
+          Write to Us
+        </a>
+      </div>
 
       
     </section>
