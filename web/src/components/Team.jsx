@@ -33,7 +33,7 @@ function Team() {
   return (
     <section className="team" id="projects">
       <h2 className="team-title">Our Team</h2>
-      <p className="team-subtitle">The people behind LactoMetaDb</p>
+      
 
       <div className="team-list">
         {team.map((member, index) => (

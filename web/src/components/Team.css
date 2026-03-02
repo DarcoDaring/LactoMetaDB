@@ -1,23 +1,34 @@
+/* =========================
+   TEAM SECTION
+========================= */
 .team {
   padding: 100px 60px;
   text-align: center;
-  background: radial-gradient(circle at top, #c8bbc6, 5px solid #38bdf8);
+  background: radial-gradient(
+    circle at top,
+    var(--bg-accent),
+    var(--bg-main)
+  );
 }
 
-/* Title */
+/* =========================
+   TITLE
+========================= */
 .team-title {
   font-size: 2.6rem;
-  color: #111827;
+  color: var(--text-dark);
   font-weight: 600;
 }
 
 .team-subtitle {
   margin-top: 10px;
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--text-light);
 }
 
-/* Grid */
+/* =========================
+   GRID
+========================= */
 .team-list {
   margin-top: 60px;
   display: grid;
@@ -29,54 +40,63 @@
   justify-items: center;
 }
 
-/* Card */
+/* =========================
+   CARD
+========================= */
 .project-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(251, 239, 239, 0.85);
   padding: 32px;
   border-radius: 22px;
-  backdrop-filter: none;
   transition: transform 0.35s ease, box-shadow 0.35s ease;
-  border: 1px solid rgba(4, 3, 3, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   width: 100%;
   max-width: 320px;
+
   display: flex;
   flex-direction: column;
-  align-items: center; /* ✅ center content */
+  align-items: center;
 }
 
 .project-card:hover {
-  transform: translateY(-5px);
-  transition: 0.3s;
+  transform: translateY(-6px);
+  box-shadow: 0 16px 35px rgba(245, 175, 175, 0.35);
 }
 
-/* Image */
+/* =========================
+   IMAGE
+========================= */
 .member-img {
   width: 160px;
   height: 200px;
-  border-radius: 0%;
+  border-radius: 12px;
   object-fit: cover;
   display: block;
-  margin: 0 auto 16px auto; /* ✅ centered */
+  margin: 0 auto 16px auto;
 }
 
-/* Role */
+/* =========================
+   ROLE
+========================= */
 .project-card h3 {
   font-size: 1.35rem;
-  color: #1f2937;
+  color: var(--text-dark);
   margin-bottom: 10px;
 }
 
-/* Name */
+/* =========================
+   NAME
+========================= */
 .member-name {
   font-size: 1.09rem;
-  font-style: normal;
-  color: #000000;
+  color: var(--text-light);
   line-height: 1.6;
   margin-bottom: 18px;
   text-align: center;
 }
 
-/* Social icons */
+/* =========================
+   SOCIAL ICONS
+========================= */
 .social-links {
   display: flex;
   gap: 14px;
@@ -86,18 +106,20 @@
 
 .social-links a {
   text-decoration: none;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-accent);
   padding: 10px;
   border-radius: 50%;
   transition: all 0.3s ease;
 }
 
 .social-links a:hover {
-  background: rgba(59, 130, 246, 0.25);
-  transform: scale(1.1);
+  background: var(--primary);
+  transform: scale(1.12);
 }
 
-/* Responsive */
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 1024px) {
   .team-list {
     grid-template-columns: repeat(2, 1fr);

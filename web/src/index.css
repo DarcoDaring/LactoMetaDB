@@ -1,26 +1,52 @@
-
+/* ===== GLOBAL RESET ===== */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg-main: #FCF8F8;
+  --bg-surface: #FBEFEF;
+  --bg-accent: #F9DFDF;
+  --primary: #F5AFAF;
 
+  --text-dark: #2b2b2b;
+  --text-light: #6b6b6b;
+  --white: #ffffff;
+}
+
+/* ===== BODY ===== */
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+}
+
+/* ===== HERO (CENTERED LANDING STYLE) ===== */
 .hero {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
- 
   text-align: center;
+  background: linear-gradient(
+    135deg,
+    var(--bg-main),
+    var(--bg-accent)
+  );
 }
 
+/* HERO TEXT */
 .hero h1 {
   font-size: 3rem;
-  color: #38bdf8;
+  color: var(--primary);
 }
 
 .hero p {
-  margin-top: 0px;
+  margin-top: 8px;
   font-size: 1.2rem;
-  color: #e5e7eb;
+  color: var(--text-light);
 }

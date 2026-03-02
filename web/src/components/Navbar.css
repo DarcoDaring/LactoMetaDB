@@ -1,20 +1,19 @@
-/* GLOBAL */
-html {
-  scroll-behavior: smooth;
-}
-
-/* NAVBAR */
+/* ===== NAVBAR ===== */
 .navbar {
   width: 100%;
-  background: linear-gradient(135deg, #ede0d4, #d1c3b5);
+  background: linear-gradient(
+    135deg,
+    var(--bg-surface),
+    var(--bg-accent)
+  );
   padding: 40px 0;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-/* INNER */
+/* ===== INNER ===== */
 .navbar-inner {
   display: flex;
   align-items: center;
@@ -22,7 +21,7 @@ html {
   position: relative;
 }
 
-/* LOGO */
+/* ===== LOGO ===== */
 .nav-logo {
   position: absolute;
   left: 50%;
@@ -32,7 +31,7 @@ html {
   gap: 10px;
   font-size: 40px;
   font-weight: 700;
-  color: #070707;
+  color: var(--text-dark);
 }
 
 .nav-logo-img {
@@ -41,7 +40,7 @@ html {
   object-fit: contain;
 }
 
-/* LINKS (DESKTOP) */
+/* ===== LINKS ===== */
 .nav-links {
   position: absolute;
   right: 30px;
@@ -52,22 +51,22 @@ html {
 .nav-links a {
   text-decoration: none;
   font-size: 16px;
-  color: #000;
+  color: var(--text-dark);
   padding: 8px 14px;
   border-radius: 10px;
   transition: 0.3s;
 }
 
 .nav-links a:hover {
-  background: rgba(234, 230, 230, 0.6);
+  background: rgba(245, 175, 175, 0.35);
 }
 
 .nav-links a.active {
-  background: #fff;
+  background: var(--primary);
   font-weight: 600;
 }
 
-/* HAMBURGER */
+/* ===== HAMBURGER ===== */
 .hamburger {
   position: absolute;
   right: 20px;
@@ -80,25 +79,12 @@ html {
 .hamburger span {
   width: 26px;
   height: 3px;
-  background: #000;
+  background: var(--text-dark);
   border-radius: 4px;
   transition: 0.3s;
 }
 
-/* HAMBURGER ANIMATION */
-.hamburger.open span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.hamburger.open span:nth-child(2) {
-  opacity: 0;
-}
-
-.hamburger.open span:nth-child(3) {
-  transform: rotate(-45deg) translate(6px, -6px);
-}
-
-/* ================= MOBILE ================= */
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .navbar {
     padding: 14px 0;
@@ -106,7 +92,6 @@ html {
 
   .nav-logo {
     font-size: 22px;
-    gap: 6px;
   }
 
   .nav-logo-img {
@@ -124,7 +109,7 @@ html {
     left: 0;
     right: 0;
     width: 100%;
-    background: #fff;
+    background: var(--bg-surface);
     flex-direction: column;
     align-items: center;
     gap: 14px;
@@ -149,4 +134,4 @@ html {
     font-size: 18px;
     padding: 12px 0;
   }
-} 
+}
