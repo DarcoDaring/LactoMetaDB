@@ -10,7 +10,7 @@ function Team() {
     },
     {
       image: "/images/Pooja.jpeg",
-      name: "Poojas SureshKumar",
+      name: "Pooja SureshKumar",
       linkedin: "https://www.linkedin.com/in/t-s-pooja-sree",
     },
     {
